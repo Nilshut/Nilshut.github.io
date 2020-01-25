@@ -1,0 +1,17 @@
+{
+  "name": "project3",
+  "version": "1.0.0",
+  "description": "data vis project 3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nils Hutmacher",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^5.15.0"
+  },
+  "devDependencies": {
+    "https-server": "^0.1.2"
+  }
+}
