@@ -20,6 +20,9 @@ count = 0
 filename_german_geocoded = "german_institutes_geocoded.pkl"
 filename_international_geocoded = "international_institutes_geocoded.pkl"
 filename_preprocessed_project_data = "data/preprocessed_project_data.pkl"
+filename_filter_data = "data/filter_data.csv"
+filename_network_data = "data/network_data.csv"
+
 collect_df_length = None
 
 def add_rows_for_each_project_year(projects_data,mean_duration):
@@ -75,37 +78,33 @@ def preprocess_projects_data():
     projects_data.to_pickle(filename_preprocessed_project_data)
 
 def main():
+    #preprocess project data
     if (not path.exists(filename_preprocessed_project_data)):
         preprocess_projects_data()
     projects_data = pd.read_pickle(filename_preprocessed_project_data)                          #preprocess_projects_data()
+    projects_data.project_id_number = projects_data.project_id_number.astype(np.int64)
 
-    #work on german institutes
-    projects_data = seperate_german_and_international_projects_data(projects_data)[0]
-    institutes_geocoded = pd.read_pickle(filename_german_geocoded)
-    projects_data_with_geo = projects_data.merge(institutes_geocoded, on='address')
+    #network data
+    persons = pd.read_csv('gepris/extracted_person_data.csv')
+    persons = persons.drop(['phone','fax','email','internet'],axis=1)
+    persons_relation = pd.read_csv('gepris/project_person_relations.csv')
+    network_data = persons.merge(persons_relation,on='person_id')
+    #save to csv
+    #network_data.to_csv(filename_network_data, index=False)
 
-    # #only projects after 2017
-    # projects_data_with_geo = projects_data_with_geo[projects_data_with_geo.year > 2017]
-    # projects_data_with_geo_and_count = add_projects_per_institutes(projects_data_with_geo)
+    #filter data
+    #add subjects
+    unique_projects_before = len(projects_data.project_id_number.unique())
+    subjects = pd.read_csv('gepris/project_ids_to_participating_subject_areas.csv')
+    subjects.project_id = subjects.project_id.astype(np.int64)
+    filter_data = projects_data.merge(subjects, left_on='project_id_number', right_on='project_id')
+    unique_projects_after = len(filter_data.project_id_number.unique())
 
-    # ranking_data_raw = pd.read_csv('ranking.csv', sep=";")
-    # ranking_data = preprocess_ranking_data(ranking_data_raw)  # Hochschulranking data
-    #
-    # #join gepris and ranking data
-    # relations = pd.read_csv('ranking_relation_gepris.csv', sep=";")
-    # relations.institution_id = relations.institution_id.fillna(0).astype(int)
-    # data_joined = projects_data_with_geo.merge(relations, on='institution_id')
-    # data_joined = data_joined.merge(ranking_data, on='institute_id_ranking')
+    #filter project data
+    filter_data = filter_data.drop(['dfg_verfahren', 'relation_type', 'name', 'address'], axis=1)
 
-    # # add lon lat for ranking data
-    # ranking_data_for_plot = get_lon_lat_for_rating_data(data_joined)
-
-    # #get gepris data for institutes in ranking data
-    # institutes_in_ranking_data = ranking_data[['institution_id']]
-    # gepris_data_for_plot = projects_data_with_geo.loc[projects_data_with_geo.institution_id.isin(institutes_in_ranking_data.institution_id.tolist())]
-    # gepris_data_for_plot = gepris_data_for_plot.drop(columns=['year','duration']).drop_duplicates('institution_id')
-
-    print("Debug")
+    #save to csv
+    #filter_data.to_csv(filename_filter_data, index=False)
 
 def get_lon_lat_for_rating_data(data_joined):
     # add geo to ranking data
