@@ -1,17 +1,14 @@
 {
-  "name": "project3",
-  "version": "1.0.0",
-  "description": "data vis project 3",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@d3/force-directed-graph",
+  "main": "a6c00de7c09bdfa1@139.js",
+  "version": "139.0.0",
+  "homepage": "https://observablehq.com/@d3/force-directed-graph",
+  "author": {
+    "name": "D3",
+    "url": "https://observablehq.com/@d3"
   },
-  "author": "Nils Hutmacher",
-  "license": "ISC",
-  "dependencies": {
-    "d3": "^5.15.0"
-  },
-  "devDependencies": {
-    "https-server": "^0.1.2"
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4"
   }
 }

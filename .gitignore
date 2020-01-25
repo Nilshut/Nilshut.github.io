@@ -2,3 +2,4 @@ gepris/
 .idea/
 venv/
 d3/node_modules/
+d3/force directed/node_modules/
