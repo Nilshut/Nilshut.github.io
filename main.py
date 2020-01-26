@@ -23,6 +23,11 @@ filename_preprocessed_project_data = "data/preprocessed_project_data.pkl"
 filename_filter_data = "data/filter_data.csv"
 filename_network_data = "data/network_data.csv"
 
+filename_links = "data/links.pkl"
+filename_links_csv = "data/links.csv"
+filename_nodes_csv = "data/nodes.csv"
+
+
 collect_df_length = None
 
 def add_rows_for_each_project_year(projects_data,mean_duration):
@@ -89,8 +94,35 @@ def main():
     persons = persons.drop(['phone','fax','email','internet'],axis=1)
     persons_relation = pd.read_csv('gepris/project_person_relations.csv')
     network_data = persons.merge(persons_relation,on='person_id')
+
+    # links = pd.DataFrame(columns=["person1","person2","collaborations"])#columns=network_data.columns)
+    # for project in network_data.project_id_number.unique():
+    #     project_members = network_data[network_data.project_id_number == project]
+    #     if(len(project_members)>1):
+    #         print(project)
+    #         for person in project_members.person_id.apply(str):
+    #             for others in project_members.person_id.apply(str):
+    #                 if(others != person):
+    #                     row = pd.Series([person,others,1],index=["person1","person2","collaborations"])
+    #                     links = links.append(row,ignore_index=True)
+    # links.to_pickle(filename_links)
+    links = pd.read_pickle(filename_links)
+    links = links.drop(["collaborations"],axis=1)
+    links = links.groupby(['person1','person2']).size().reset_index()
+    links = links.rename(columns={0 : "value"})
+
+    #save to csv
+    #links.to_csv(filename_links_csv, index=False)
+
     #save to csv
     #network_data.to_csv(filename_network_data, index=False)
+
+    nodes = network_data.drop_duplicates('person_id')
+    nodes = nodes.drop(['relation_type', 'project_id_number'], axis=1)
+
+    # nodes.to_csv(filename_nodes_csv, index=False)
+
+
 
     #filter data
     #add subjects
@@ -105,6 +137,8 @@ def main():
 
     #save to csv
     #filter_data.to_csv(filename_filter_data, index=False)
+
+    print("DEBUG")
 
 def get_lon_lat_for_rating_data(data_joined):
     # add geo to ranking data
