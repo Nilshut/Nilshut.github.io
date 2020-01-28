@@ -1,14 +1,19 @@
 {
-  "name": "@d3/force-directed-graph",
-  "main": "a6c00de7c09bdfa1@139.js",
-  "version": "139.0.0",
-  "homepage": "https://observablehq.com/@d3/force-directed-graph",
-  "author": {
-    "name": "D3",
-    "url": "https://observablehq.com/@d3"
+  "name": "force-directed",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "type": "module",
-  "peerDependencies": {
-    "@observablehq/runtime": "4"
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "csv-writer": "^1.6.0",
+    "csvtojson": "^2.0.10",
+    "http-server": "^0.12.1"
+  },
+  "dependencies": {
+    "d3": "^5.15.0"
   }
 }
