@@ -28,47 +28,44 @@ async function main() {
   setup();
 
   draw(data.links, data.nodes);
-
 }
-
 
 async function setup() {
   const svg = d3.select('body').append('svg')
     .attr('width', '50%')
     .attr('height', '100%')
-    // .attr("width", width + margin.left + margin.right)
-    // .attr("height", height + margin.top + margin.bottom)
-    .attr("style", "outline: thin solid black;")
-    // .attr('viewBox', [0, 0, width + margin.left, height + margin.top + margin.bottom])
-    .attr('viewBox', [width/4, width/4, width/2, height/2])
-    // .call(d3.zoom()
-    //   .extent([[0, 0], [width, height]])
-    //   .scaleExtent([0.51, 10])
-    //   .on("zoom", function () {
-    //   svg.attr("transform", d3.event.transform)
-    // }))
+    .attr('style', 'outline: thin solid black;');
 
-  svg.append('g')
+  const networkGroup = svg.append('g').attr('class', 'network');
+
+  networkGroup.append('g')
     .attr('class', 'links')
     .attr('stroke', '#999')
-    .attr('stroke-opacity', 0.6)
-    // .attr("transform",
-    //       "translate(" + margin.left + "," + margin.top + ")");
+    .attr('stroke-opacity', 0.6);
 
-  svg.append('g')
+  networkGroup.append('g')
     .attr('class', 'nodes')
     .attr('stroke', '#fff')
-    .attr('stroke-width', 1.5)
-    // .attr("transform",
-    //       "translate(" + margin.left + "," + margin.top + ")");
+    .attr('stroke-width', 1.5);
+
+  svg.call(d3.zoom()
+    .extent([[0, 0], [width, height]])
+    .scaleExtent([0.25, 10])
+    .on('zoom', () => {
+      networkGroup.attr('transform', d3.event.transform)
+    })
+  );
 }
 
+function getViewBox(svg) {
+  return svg.attr('viewBox').split(',').map(str => parseInt(str));
+}
 
 async function draw(links, nodes) {
   const simulation = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id(d => d.person_id))
-      .force('charge', d3.forceManyBody())
-      .force('center', d3.forceCenter(width / 2, height / 2));
+    .force('link', d3.forceLink(links).id(d => d.person_id))
+    .force('charge', d3.forceManyBody())
+    .force('center', d3.forceCenter(width / 2, height / 2));
 
   const link = d3.select('g.links')
     .selectAll('line')
