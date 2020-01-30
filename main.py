@@ -27,6 +27,7 @@ filename_network_data = "data/network_data.csv"
 filename_links = "data/links.pkl"
 filename_links_csv = "data/links.csv"
 filename_nodes_csv = "data/nodes.csv"
+filename_nodes_with_institutes_csv = "data/nodes_with_institutes.csv"
 
 collect_df_length = None
 
@@ -102,6 +103,7 @@ def main():
     # links.to_pickle(filename_links)
 
     links = pd.read_pickle(filename_links)
+    links[['source','target']] = links[['source','target']].apply(pd.to_numeric)
 
     # links = links.drop(["collaborations"],axis=1)
     # links = links.groupby(['person1','person2']).size().reset_index()
@@ -109,19 +111,45 @@ def main():
     # links.to_pickle(filename_links)
 
     #save to csv
-    #links.to_csv(filename_links_csv, index=False)
-
-    #save to csv
     #network_data.to_csv(filename_network_data, index=False)
 
     nodes = network_data.drop_duplicates('person_id')
-    nodes = nodes.drop(['project_id_number','relation_type'],axis=1)
+    nodes = nodes.drop(['relation_type','address'],axis=1)        #['project_id_number']
+    nodes = nodes.rename(columns={"name" : "person_name"})
+
+    people_institutes = pd.read_csv("gepris/people_joined_with_institutions.csv")
+    people_institutes = people_institutes[['person_id','institution_id']]
+    people_institutes = people_institutes.dropna().astype('int64')
 
     #add institutes name
     institutes = pd.read_csv("gepris/extracted_institution_data.csv")
+    institutes = institutes.drop(['phone','fax','email','internet','address'],axis=1)
+    nodes = nodes.merge(people_institutes,on='person_id')
+    nodes_final = nodes.merge(institutes, on='institution_id')
 
-    nodes_with_name = institutes.merge(nodes, on='address')
-    # nodes.to_csv(filename_nodes_csv, index=False)
+    #nodes_final.to_csv(filename_nodes_with_institutes_csv, index=False)
+
+    links = links[links.source.isin(nodes_final.person_id)]
+    links = links[links.target.isin(nodes_final.person_id)]
+
+    #save to csv
+    links.to_csv(filename_links_csv, index=False)
+
+    subjects = pd.read_csv('gepris/project_ids_to_subject_areas.csv')
+    subject_areas = pd.read_csv('gepris/subject_areas.csv')
+    subjects = subjects.merge(subject_areas, on='subject_area')
+    research_areas = subjects.research_area.unique()
+
+    # new_research_areas = pd.Series()
+    # for index, row in subjects.iterrows():
+    #     print(index)
+    #     x = row.research_area.split("(")[0]
+    #     new_research_areas = new_research_areas.append(pd.Series([x],[index]))
+    # print("DEBUG")
+    #
+    # subjects['research_area'] = new_research_areas
+    # subjects.to_csv("data/subject_areas.csv", index=False)
+    # print("DEBUG")
 
 
     # #filter data

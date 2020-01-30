@@ -28,24 +28,41 @@ async function main() {
   setup();
 
   draw(data.links, data.nodes);
+
 }
+
 
 async function setup() {
   const svg = d3.select('body').append('svg')
-    .attr('width', '100%')
+    .attr('width', '50%')
     .attr('height', '100%')
-    .attr('viewBox', [0, 0, width, height]);
+    // .attr("width", width + margin.left + margin.right)
+    // .attr("height", height + margin.top + margin.bottom)
+    .attr("style", "outline: thin solid black;")
+    // .attr('viewBox', [0, 0, width + margin.left, height + margin.top + margin.bottom])
+    .attr('viewBox', [width/4, width/4, width/2, height/2])
+    // .call(d3.zoom()
+    //   .extent([[0, 0], [width, height]])
+    //   .scaleExtent([0.51, 10])
+    //   .on("zoom", function () {
+    //   svg.attr("transform", d3.event.transform)
+    // }))
 
   svg.append('g')
     .attr('class', 'links')
     .attr('stroke', '#999')
-    .attr('stroke-opacity', 0.6);
+    .attr('stroke-opacity', 0.6)
+    // .attr("transform",
+    //       "translate(" + margin.left + "," + margin.top + ")");
 
   svg.append('g')
     .attr('class', 'nodes')
     .attr('stroke', '#fff')
-    .attr('stroke-width', 1.5);
+    .attr('stroke-width', 1.5)
+    // .attr("transform",
+    //       "translate(" + margin.left + "," + margin.top + ")");
 }
+
 
 async function draw(links, nodes) {
   const simulation = d3.forceSimulation(nodes)
@@ -132,6 +149,9 @@ function uniquePersonIdList(linkList, initialList = []) {
 let data;
 const height = 2000;
 const width = 2000;
+// const margin = {top: 10, right: 30, bottom: 30, left: 60};
+// const width = 1000 - margin.left - margin.right;
+// const height = 1000 - margin.top - margin.bottom;
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 main();
