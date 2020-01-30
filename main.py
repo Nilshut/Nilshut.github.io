@@ -83,67 +83,67 @@ def preprocess_projects_data():
     projects_data.to_pickle(filename_preprocessed_project_data)
 
 def main():
-    # #network data
-    # persons = pd.read_csv('gepris/extracted_person_data.csv')
-    # persons = persons.drop(['phone','fax','email','internet'],axis=1)
-    # persons_relation = pd.read_csv('gepris/project_person_relations.csv')
-    # network_data = persons.merge(persons_relation,on='person_id')
-    #
-    # # links = pd.DataFrame(columns=["person1","person2","collaborations"])#columns=network_data.columns)
-    # # for project in network_data.project_id_number.unique():
-    # #     project_members = network_data[network_data.project_id_number == project]
-    # #     if(len(project_members)>1):
-    # #         print(project)
-    # #         for person in project_members.person_id.apply(str):
-    # #             for others in project_members.person_id.apply(str):
-    # #                 if(others != person):
-    # #                     row = pd.Series([person,others,1],index=["person1","person2","collaborations"])
-    # #                     links = links.append(row,ignore_index=True)
-    # # links.to_pickle(filename_links)
-    #
-    # links = pd.read_pickle(filename_links)
-    #
-    # # links = links.drop(["collaborations"],axis=1)
-    # # links = links.groupby(['person1','person2']).size().reset_index()
-    # # links = links.rename(columns={"person1" : "source", "person2" : "target" , 0 : "value"})
-    # # links.to_pickle(filename_links)
-    #
-    # #save to csv
-    # #links.to_csv(filename_links_csv, index=False)
-    #
-    # #save to csv
-    # #network_data.to_csv(filename_network_data, index=False)
-    #
-    # nodes = network_data.drop_duplicates('person_id')
-    # nodes = nodes.drop(['project_id_number','relation_type'],axis=1)
-    #
-    # #add institutes name
-    # institutes = pd.read_csv("gepris/extracted_institution_data.csv")
-    #
-    # nodes_with_name = institutes.merge(nodes, on='address')
-    # # nodes.to_csv(filename_nodes_csv, index=False)
+    #network data
+    persons = pd.read_csv('gepris/extracted_person_data.csv')
+    persons = persons.drop(['phone','fax','email','internet'],axis=1)
+    persons_relation = pd.read_csv('gepris/project_person_relations.csv')
+    network_data = persons.merge(persons_relation,on='person_id')
 
+    # links = pd.DataFrame(columns=["person1","person2","collaborations"])#columns=network_data.columns)
+    # for project in network_data.project_id_number.unique():
+    #     project_members = network_data[network_data.project_id_number == project]
+    #     if(len(project_members)>1):
+    #         print(project)
+    #         for person in project_members.person_id.apply(str):
+    #             for others in project_members.person_id.apply(str):
+    #                 if(others != person):
+    #                     row = pd.Series([person,others,1],index=["person1","person2","collaborations"])
+    #                     links = links.append(row,ignore_index=True)
+    # links.to_pickle(filename_links)
 
-    #filter data
-    # preprocess project data
-    if (not path.exists(filename_preprocessed_project_data)):
-        preprocess_projects_data()
-    projects_data = pd.read_pickle(filename_preprocessed_project_data)
-    projects_data.project_id_number = projects_data.project_id_number.astype(np.int64)
+    links = pd.read_pickle(filename_links)
 
-    #add subjects
-    unique_projects_before = len(projects_data.project_id_number.unique())
-    subjects = pd.read_csv('gepris/project_ids_to_participating_subject_areas.csv')
-    subjects.project_id = subjects.project_id.astype(np.int64)
-    filter_data = projects_data.merge(subjects, left_on='project_id_number', right_on='project_id')
-    unique_projects_after = len(filter_data.project_id_number.unique())
+    # links = links.drop(["collaborations"],axis=1)
+    # links = links.groupby(['person1','person2']).size().reset_index()
+    # links = links.rename(columns={"person1" : "source", "person2" : "target" , 0 : "value"})
+    # links.to_pickle(filename_links)
 
-    #filter project data
-    filter_data = filter_data.drop(['relation_type', 'address','project_id',"institution_id"], axis=1)
-    filter_data.duration += 1
     #save to csv
-    filter_data.to_csv(filename_filter_data_with_subject, index=False)
-    #filter_data.to_csv(filename_filter_data, index=False)
+    #links.to_csv(filename_links_csv, index=False)
+
+    #save to csv
+    #network_data.to_csv(filename_network_data, index=False)
+
+    nodes = network_data.drop_duplicates('person_id')
+    nodes = nodes.drop(['project_id_number','relation_type'],axis=1)
+
+    #add institutes name
+    institutes = pd.read_csv("gepris/extracted_institution_data.csv")
+
+    nodes_with_name = institutes.merge(nodes, on='address')
+    # nodes.to_csv(filename_nodes_csv, index=False)
+
+
+    # #filter data
+    # # preprocess project data
+    # if (not path.exists(filename_preprocessed_project_data)):
+    #     preprocess_projects_data()
+    # projects_data = pd.read_pickle(filename_preprocessed_project_data)
+    # projects_data.project_id_number = projects_data.project_id_number.astype(np.int64)
+    #
+    # #add subjects
+    # unique_projects_before = len(projects_data.project_id_number.unique())
+    # subjects = pd.read_csv('gepris/project_ids_to_participating_subject_areas.csv')
+    # subjects.project_id = subjects.project_id.astype(np.int64)
+    # filter_data = projects_data.merge(subjects, left_on='project_id_number', right_on='project_id')
+    # unique_projects_after = len(filter_data.project_id_number.unique())
+    #
+    # #filter project data
+    # filter_data = filter_data.drop(['relation_type', 'address','project_id',"institution_id"], axis=1)
+    # filter_data.duration += 1
+    # #save to csv
+    # filter_data.to_csv(filename_filter_data_with_subject, index=False)
+    # #filter_data.to_csv(filename_filter_data, index=False)
 
     print("DEBUG")
 
