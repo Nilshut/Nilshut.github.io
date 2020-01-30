@@ -84,7 +84,7 @@ async function draw(links, nodes) {
       .attr('fill', d => colorScale(d.institution_id))
       .call(drag(simulation));
 
-  node.append('title').text(d => d.name);
+  node.append('title').text(d => d.person_name);
 
   simulation.on('tick', () => {
     link
