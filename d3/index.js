@@ -1,6 +1,6 @@
 async function loadData() {
   const data = {
-    nodes: await d3.csv('nodes.csv'),
+    nodes: await d3.csv('nodes_with_institutes.csv'),
     links: await d3.csv('links.csv')
   };
 
@@ -81,7 +81,7 @@ async function draw(links, nodes) {
     .data(nodes)
     .join('circle')
       .attr('r', 5)
-      .attr('fill', d => colorScale(d.address))
+      .attr('fill', d => colorScale(d.institution_id))
       .call(drag(simulation));
 
   node.append('title').text(d => d.name);
