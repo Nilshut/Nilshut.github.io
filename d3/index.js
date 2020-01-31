@@ -1,11 +1,11 @@
-async function loadData() {
-  const data = {
+async function loadDataNetwork() {
+  const dataNetwork = {
     nodes: await d3.csv('nodes_with_institutes.csv'),
     links: await d3.csv('links.csv')
   };
 
-  data.links = data.links.filter((l, i) => i < 1000);
-  const nodeNames = data.links.reduce((n, l) => {
+  dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
+  const nodeNames = dataNetwork.links.reduce((n, l) => {
     if (!n.includes(l.source)) {
       n = [...n, l.source];
     }
@@ -15,28 +15,35 @@ async function loadData() {
     return n;
   }, []);
 
-  data.nodes = data.nodes.filter(n => nodeNames.includes(n.person_id));
+  dataNetwork.nodes = dataNetwork.nodes.filter(n => nodeNames.includes(n.person_id));
 
-  return data;
+  return dataNetwork;
 }
 
+async function loadDataFilter() {
+  const dataFilter = await d3.csv('filter_data.csv');
+
+  return dataFilter;
+}
+
+
 async function main() {
-  data = await loadData();
-  data.links = data.links.map(d => Object.create(d));
-  data.nodes = data.nodes.map(d => Object.create(d));
+  dataNetwork = await loadDataNetwork();
+  dataNetwork.links = dataNetwork.links.map(d => Object.create(d));
+  dataNetwork.nodes = dataNetwork.nodes.map(d => Object.create(d));
 
   setup();
 
-  draw(data.links, data.nodes);
+  draw(dataNetwork.links, dataNetwork.nodes);
 }
 
 async function setup() {
-  const svg = d3.select('body').append('svg')
+  const svg1 = d3.select('body').append('svg')
     .attr('width', '50%')
     .attr('height', '100%')
     .attr('style', 'outline: thin solid black;');
 
-  const networkGroup = svg.append('g').attr('class', 'network');
+  const networkGroup = svg1.append('g').attr('class', 'network');
 
   networkGroup.append('g')
     .attr('class', 'links')
@@ -48,18 +55,29 @@ async function setup() {
     .attr('stroke', '#fff')
     .attr('stroke-width', 1.5);
 
-  svg.call(d3.zoom()
+  svg1.call(d3.zoom()
     .extent([[0, 0], [width, height]])
     .scaleExtent([0.25, 10])
     .on('zoom', () => {
       networkGroup.attr('transform', d3.event.transform)
     })
   );
+
+
+  // const svg2 = d3.select('body').append('svg')
+  //   .attr('width', '100%')
+  //   .attr('height', '100%')
+  //   .attr('style', 'outline: solid yellow;')
+  //   .attr('viewBox', [0, 0, width, height]);
+  //
+  // svg2.append('g')
+  //   .attr('transform', 'translate(30,30)')
+
 }
 
-function getViewBox(svg) {
-  return svg.attr('viewBox').split(',').map(str => parseInt(str));
-}
+// function getViewBox(svg) {
+//   return svg.attr('viewBox').split(',').map(str => parseInt(str));
+// }
 
 async function draw(links, nodes) {
   const simulation = d3.forceSimulation(nodes)
@@ -116,15 +134,15 @@ function drag(simulation) {
 
 function drawRelatedTo(personId) {
   const personIds = getPersonIdsRelatedTo([personId]);
-  const nodes = data.nodes.filter(n => personIds.includes(n.person_id));
-  const links = data.links.filter(l => personIds.includes(l.source.person_id) && personIds.includes(l.target.person_id));
+  const nodes = dataNetwork.nodes.filter(n => personIds.includes(n.person_id));
+  const links = dataNetwork.links.filter(l => personIds.includes(l.source.person_id) && personIds.includes(l.target.person_id));
 
   console.log(personIds, nodes, links);
   draw(links, nodes);
 }
 
 function getPersonIdsRelatedTo(roots, depth = 5) {
-  const newRoots = data.links.filter(l => roots.includes(l.source.person_id) || roots.includes(l.target.person_id));
+  const newRoots = dataNetwork.links.filter(l => roots.includes(l.source.person_id) || roots.includes(l.target.person_id));
   if (depth) {
     return getPersonIdsRelatedTo(uniquePersonIdList(newRoots, roots), depth - 1);
   }
@@ -143,12 +161,9 @@ function uniquePersonIdList(linkList, initialList = []) {
   }, initialList);
 }
 
-let data;
+//let data;
 const height = 2000;
 const width = 2000;
-// const margin = {top: 10, right: 30, bottom: 30, left: 60};
-// const width = 1000 - margin.left - margin.right;
-// const height = 1000 - margin.top - margin.bottom;
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 main();
