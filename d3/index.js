@@ -1,3 +1,5 @@
+import { init } from './crossfilter.js';
+
 let r_factor = 2;
 const height = 2000;
 const width = 2000;
@@ -8,6 +10,8 @@ async function loadDataNetwork() {
     nodes: await d3.csv('nodes_with_institutes.csv'),
     links: await d3.csv('links.csv')
   };
+
+  const cf = init(await d3.csv('filter_data.csv'), dataNetwork.nodes);
 
   dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
   const nodeNames = dataNetwork.links.reduce((n, l) => {
@@ -31,8 +35,8 @@ async function loadDataFilter() {
   return dataFilter;
 }
 
-async function main() {
-  dataNetwork = await loadDataNetwork();
+export async function main() {
+  const dataNetwork = await loadDataNetwork();
   dataNetwork.links = dataNetwork.links.map(d => Object.create(d));
   dataNetwork.nodes = dataNetwork.nodes.map(d => Object.create(d));
 
