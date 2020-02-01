@@ -1,3 +1,8 @@
+let r_factor = 2;
+const height = 2000;
+const width = 2000;
+const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
 async function loadDataNetwork() {
   const dataNetwork = {
     nodes: await d3.csv('nodes_with_institutes.csv'),
@@ -26,7 +31,6 @@ async function loadDataFilter() {
   return dataFilter;
 }
 
-
 async function main() {
   dataNetwork = await loadDataNetwork();
   dataNetwork.links = dataNetwork.links.map(d => Object.create(d));
@@ -38,12 +42,15 @@ async function main() {
 }
 
 async function setup() {
-  const svg1 = d3.select('body').append('svg')
-    .attr('width', '50%')
-    .attr('height', '100%')
-    .attr('style', 'outline: thin solid black;');
 
-  const networkGroup = svg1.append('g').attr('class', 'network');
+  const forceDirectedGraph = d3.select('body')
+  .append('div')
+  .attr('class', 'splitLayout')
+  .attr('style', 'display: flex; height: 100%')
+    .append('svg')
+      .attr('style', 'outline: thin solid black; flex: auto;');
+
+  const networkGroup = forceDirectedGraph.append('g').attr('class', 'network');
 
   networkGroup.append('g')
     .attr('class', 'links')
@@ -55,7 +62,7 @@ async function setup() {
     .attr('stroke', '#fff')
     .attr('stroke-width', 1.5);
 
-  svg1.call(d3.zoom()
+  forceDirectedGraph.call(d3.zoom()
     .extent([[0, 0], [width, height]])
     .scaleExtent([0.25, 10])
     .on('zoom', () => {
@@ -63,23 +70,36 @@ async function setup() {
     })
   );
 
+  //detail text selected node
+  const details = d3.select('body .splitLayout').append('div')
+    .attr('class', 'datailsText')
+    .attr('style', 'outline: solid green; width: 400px; height: 100%;')
 
-  // const svg2 = d3.select('body').append('svg')
-  //   .attr('width', '100%')
-  //   .attr('height', '100%')
-  //   .attr('style', 'outline: solid yellow;')
-  //   .attr('viewBox', [0, 0, width, height]);
-  //
-  // svg2.append('g')
-  //   .attr('transform', 'translate(30,30)')
+  details.append("div")
+    .attr('class', 'universityField')
+    .attr("width", 100)
+    .attr("height", 100);
 
+  details.append("div")
+    .attr('class', 'personNameField')
+    .attr("width", 100)
+    .attr("height", 100);
+
+  showDetails({ institution_name: '', person_name: ''});
 }
 
-// function getViewBox(svg) {
-//   return svg.attr('viewBox').split(',').map(str => parseInt(str));
-// }
+async function showDetails(data) {
+  const details = d3.select('.datailsText')
+    details.select(".universityField")
+      .text(`University: ${data.institution_name}`);
+    details.select(".personNameField")
+      .text(`Name: ${data.person_name}`);
+}
 
 async function draw(links, nodes) {
+  let color_before_highlight;
+  let node_r;
+
   const simulation = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d => d.person_id))
     .force('charge', d3.forceManyBody())
@@ -97,7 +117,20 @@ async function draw(links, nodes) {
     .join('circle')
       .attr('r', 5)
       .attr('fill', d => colorScale(d.institution_id))
-      .call(drag(simulation));
+      .call(drag(simulation))
+      .on("mouseover", function (d) {
+        color_before_highlight = d3.select(this).attr("fill")
+        node_r = d3.select(this).attr("r")
+        d3.select(this)
+          .attr("fill", "red")
+          .attr("r", r_factor * node_r)
+        showDetails(d)
+    })
+      .on("mouseout", function (d) {
+        d3.select(this)
+          .attr("fill", color_before_highlight)
+          .attr("r", node_r);
+    })
 
   node.append('title').text(d => d.person_name);
 
@@ -137,7 +170,7 @@ function drawRelatedTo(personId) {
   const nodes = dataNetwork.nodes.filter(n => personIds.includes(n.person_id));
   const links = dataNetwork.links.filter(l => personIds.includes(l.source.person_id) && personIds.includes(l.target.person_id));
 
-  console.log(personIds, nodes, links);
+  //console.log(personIds, nodes, links);
   draw(links, nodes);
 }
 
@@ -160,10 +193,5 @@ function uniquePersonIdList(linkList, initialList = []) {
     return r;
   }, initialList);
 }
-
-//let data;
-const height = 2000;
-const width = 2000;
-const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 main();
