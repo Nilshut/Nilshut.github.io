@@ -3,26 +3,23 @@ import time    #sleep
 import json
 import math
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.express as px
-
+# import plotly.graph_objects as go
+# import plotly.express as px
+# from plotly.subplots import make_subplots
 # import chart_studio.plotly as py
 # from plotly.graph_objs import *
 
 from os import path
 import numpy as np
 
-#https://ranking.zeit.de/che/de/irgendwasmit/show#tags-begriffe_TECHNIK_-BAU---ENERGIE
-#Datenstand: Mai 2019 sind die Daten veröffentlicht worden.
-
-count = 0
 filename_german_geocoded = "german_institutes_geocoded.pkl"
 filename_international_geocoded = "international_institutes_geocoded.pkl"
 filename_preprocessed_project_data = "data/preprocessed_project_data.pkl"
 filename_filter_data = "data/filter_data.csv"
 filename_filter_data_with_subject = "data/filter_data_with_subject.csv"
+filename_filter_data_with_all_infos = "data/filter_data_with_all_infos.csv"
 filename_network_data = "data/network_data.csv"
+filename_subject_data = "data/subject_data.csv"
 
 filename_links = "data/links.pkl"
 filename_links_csv = "data/links.csv"
@@ -31,7 +28,7 @@ filename_nodes_with_institutes_csv = "data/nodes_with_institutes.csv"
 
 collect_df_length = None
 
-def add_rows_for_each_project_year(projects_data,mean_duration):
+def add_rows_for_each_project_year(projects_data, mean_duration):
     print(str(len(projects_data[projects_data.funding_start_year.isnull()])) + " /" + str(
         len(projects_data)) + " projects without funding_start_year")
     print(str(len(projects_data[projects_data.funding_end_year.isnull()])) + " /" + str(
@@ -58,203 +55,120 @@ def add_rows_for_each_project_year(projects_data,mean_duration):
                 df = df.append(new_row,ignore_index=True)
     return df
 
-def preprocess_projects_data():
+def preprocess_filter_data():
+    # load gepris data
     projects = pd.read_csv('gepris/extracted_project_data.csv')
     institutes = pd.read_csv("gepris/extracted_institution_data.csv")
     relations = pd.read_csv("gepris/project_institution_relations.csv")
-    projects_data = projects.merge(relations, left_on='project_id_number', right_on='project_id_number').merge(institutes,
-                                                                                                               left_on='institution_id',
-                                                                                                               right_on='institution_id')
-    projects_data = projects_data.drop(
-        ['title', 'project_abstract', 'participating_subject_areas_full_string', 'description', 'phone', 'fax', 'email',
-         'internet', 'parent_project_id'], axis=1)
+    projects_data = projects.merge(relations, on='project_id_number').merge(institutes, on='institution_id')
+    projects_data = projects_data.drop(['project_abstract','description', 'phone', 'fax', 'email','internet', 'parent_project_id'], axis=1)
 
     # remove start and end years are NaN
-    print(str(len(projects_data[
-                      projects_data.funding_start_year.isnull() & projects_data.funding_end_year.isnull()])) + " projects dropped with funding end and start NaN")
+    print(str(len(projects_data[projects_data.funding_start_year.isnull() & projects_data.funding_end_year.isnull()])) + " projects dropped with funding end and start NaN")
     projects_data = projects_data[~(projects_data.funding_start_year.isnull() & projects_data.funding_end_year.isnull())]
 
-    # add column project duration
-    projects_data['duration'] = (projects_data.funding_end_year + 1 - projects_data.funding_start_year).fillna(
-        0).astype(int)
-    mean_duration = projects_data.duration.mean()
+    # add column project duration ; if one is none take mean duration
+    projects_data['duration'] = (projects_data.funding_end_year + 1 - projects_data.funding_start_year).fillna(3).astype(int)
+    # mean_duration = projects_data.duration.mean()
+    # projects_data = add_rows_for_each_project_year(projects_data, mean_duration)
+    return projects_data
 
-    projects_data = add_rows_for_each_project_year(projects_data, mean_duration)
-    projects_data = projects_data.drop(columns=['funding_start_year', 'funding_end_year'])
-    projects_data.to_pickle(filename_preprocessed_project_data)
+def get_person_from_gepris():
+    persons = pd.read_csv('gepris/extracted_person_data.csv')
+    persons = persons.drop(['phone', 'fax', 'email', 'internet'], axis=1)
+    persons_relation = pd.read_csv('gepris/project_person_relations.csv')
+    persons = persons.merge(persons_relation, on='person_id')
+    return persons
+
+def fix_research_area(project_to_subject):
+    new_research_areas = pd.Series()
+    for index, row in project_to_subject.iterrows():
+        x = row.research_area.split("(")[0]
+        new_research_areas = new_research_areas.append(pd.Series([x],[index]))
+    project_to_subject['research_area'] = new_research_areas
+
+    return project_to_subject
 
 def main():
-    #network data
-    persons = pd.read_csv('gepris/extracted_person_data.csv')
-    persons = persons.drop(['phone','fax','email','internet'],axis=1)
-    persons_relation = pd.read_csv('gepris/project_person_relations.csv')
-    network_data = persons.merge(persons_relation,on='person_id')
 
-    # links = pd.DataFrame(columns=["person1","person2","collaborations"])#columns=network_data.columns)
-    # for project in network_data.project_id_number.unique():
-    #     project_members = network_data[network_data.project_id_number == project]
-    #     if(len(project_members)>1):
-    #         print(project)
-    #         for person in project_members.person_id.apply(str):
-    #             for others in project_members.person_id.apply(str):
-    #                 if(others != person):
-    #                     row = pd.Series([person,others,1],index=["person1","person2","collaborations"])
-    #                     links = links.append(row,ignore_index=True)
-    # links.to_pickle(filename_links)
-
-    links = pd.read_pickle(filename_links)
-    links[['source','target']] = links[['source','target']].apply(pd.to_numeric)
-
-    # links = links.drop(["collaborations"],axis=1)
-    # links = links.groupby(['person1','person2']).size().reset_index()
-    # links = links.rename(columns={"person1" : "source", "person2" : "target" , 0 : "value"})
-    # links.to_pickle(filename_links)
-
-    #save to csv
-    #network_data.to_csv(filename_network_data, index=False)
-
-    nodes = network_data.drop_duplicates('person_id')
-    nodes = nodes.drop(['relation_type','address'],axis=1)        #['project_id_number']
-    nodes = nodes.rename(columns={"name" : "person_name"})
-
-    people_institutes = pd.read_csv("gepris/people_joined_with_institutions.csv")
-    people_institutes = people_institutes[['person_id','institution_id']]
-    people_institutes = people_institutes.dropna().astype('int64')
-
-    #add institutes name
-    institutes = pd.read_csv("gepris/extracted_institution_data.csv")
-    institutes = institutes.drop(['phone','fax','email','internet','address'],axis=1)
-    nodes = nodes.merge(people_institutes,on='person_id')
-    nodes_final = nodes.merge(institutes, on='institution_id')
-
-    #nodes_final.to_csv(filename_nodes_with_institutes_csv, index=False)
-
-    links = links[links.source.isin(nodes_final.person_id)]
-    links = links[links.target.isin(nodes_final.person_id)]
-
-    #save to csv
-    links.to_csv(filename_links_csv, index=False)
-
-    subjects = pd.read_csv('gepris/project_ids_to_subject_areas.csv')
-    subject_areas = pd.read_csv('gepris/subject_areas.csv')
-    subjects = subjects.merge(subject_areas, on='subject_area')
-    research_areas = subjects.research_area.unique()
-
-    # new_research_areas = pd.Series()
-    # for index, row in subjects.iterrows():
-    #     print(index)
-    #     x = row.research_area.split("(")[0]
-    #     new_research_areas = new_research_areas.append(pd.Series([x],[index]))
-    # print("DEBUG")
+    # #------------------------ network data -----------------------------
     #
-    # subjects['research_area'] = new_research_areas
-    # subjects.to_csv("data/subject_areas.csv", index=False)
-    # print("DEBUG")
-
-
-    # #filter data
-    # # preprocess project data
-    # if (not path.exists(filename_preprocessed_project_data)):
-    #     preprocess_projects_data()
-    # projects_data = pd.read_pickle(filename_preprocessed_project_data)
-    # projects_data.project_id_number = projects_data.project_id_number.astype(np.int64)
+    # network_data = get_person_from_gepris()
+    # network_data = network_data.drop(['address'], axis=1)
     #
-    # #add subjects
-    # unique_projects_before = len(projects_data.project_id_number.unique())
-    # subjects = pd.read_csv('gepris/project_ids_to_participating_subject_areas.csv')
-    # subjects.project_id = subjects.project_id.astype(np.int64)
-    # filter_data = projects_data.merge(subjects, left_on='project_id_number', right_on='project_id')
-    # unique_projects_after = len(filter_data.project_id_number.unique())
-    #
-    # #filter project data
-    # filter_data = filter_data.drop(['relation_type', 'address','project_id',"institution_id"], axis=1)
-    # filter_data.duration += 1
     # #save to csv
-    # filter_data.to_csv(filename_filter_data_with_subject, index=False)
-    # #filter_data.to_csv(filename_filter_data, index=False)
+    # #network_data.to_csv(filename_network_data, index=False)
+    #
+    # nodes = network_data.drop_duplicates('person_id')
+    # nodes = nodes.drop(['relation_type'],axis=1)        #['project_id_number']
+    # nodes = nodes.rename(columns={"name" : "person_name"})
+    #
+    # people_institutes = pd.read_csv("gepris/people_joined_with_institutions.csv")
+    # people_institutes = people_institutes[['person_id','institution_id']]
+    # people_institutes = people_institutes.dropna().astype('int64')
+    #
+    # #add institutes name
+    # institutes = pd.read_csv("gepris/extracted_institution_data.csv")
+    # institutes = institutes.drop(['phone','fax','email','internet','address'],axis=1)
+    # nodes = nodes.merge(people_institutes,on='person_id')
+    # nodes_final = nodes.merge(institutes, on='institution_id')
+    #
+    # #nodes_final.to_csv(filename_nodes_with_institutes_csv, index=False)
+    #
+    # #----------------------------- links --------------------------------
+    #
+    # # links = pd.DataFrame(columns=["person1","person2","collaborations"])#columns=network_data.columns)
+    # # for project in network_data.project_id_number.unique():
+    # #     project_members = network_data[network_data.project_id_number == project]
+    # #     if(len(project_members)>1):
+    # #         print(project)
+    # #         for person in project_members.person_id.apply(str):
+    # #             for others in project_members.person_id.apply(str):
+    # #                 if(others != person):
+    # #                     row = pd.Series([person,others,1],index=["person1","person2","collaborations"])
+    # #                     links = links.append(row,ignore_index=True)
+    # # links.to_pickle(filename_links)
+    #
+    # links = pd.read_pickle(filename_links)
+    # links[['source', 'target']] = links[['source', 'target']].apply(pd.to_numeric)
+    #
+    # # links = links.drop(["collaborations"],axis=1)
+    # # links = links.groupby(['person1','person2']).size().reset_index()
+    # # links = links.rename(columns={"person1" : "source", "person2" : "target" , 0 : "value"})
+    # # links.to_pickle(filename_links)
+    #
+    # links = links[links.source.isin(nodes_final.person_id)]
+    # links = links[links.target.isin(nodes_final.person_id)]
+    #
+    # # #save to csv
+    # # links.to_csv(filename_links_csv, index=False)
+
+
+    #------------------------------- filter data ----------------------------
+    filter_data = preprocess_filter_data()
+    filter_data = filter_data.drop(['address'], axis=1)
+    filter_data.project_id_number = filter_data.project_id_number.astype(np.int64)
+    filter_data = filter_data.rename(columns={"name": "institution_name"})
+
+    #save to csv
+    if (not path.exists(filename_filter_data_with_all_infos)):
+        filter_data.to_csv(filename_filter_data_with_all_infos, index=False)
+
+    #--------------------------------- subjects ----------------------------------
+    project_to_subject = pd.read_csv('gepris/project_ids_to_participating_subject_areas.csv')
+    subject_areas = pd.read_csv('gepris/subject_areas.csv')
+    project_to_subject = project_to_subject.merge(subject_areas, on='subject_area')
+    project_to_subject = fix_research_area(project_to_subject)          #remove Mitglieder number (231 Mitglieder)
+
+    # save to csv
+    if (not path.exists(filename_subject_data)):
+        project_to_subject.to_csv(filename_subject_data, index=False)
 
     print("DEBUG")
-
-def get_first_elem(list):
-    if(len(list)>0):
-        return list[0]
-    else:
-        return None
-
-
-def get_lon_lat_for_rating_data(data_joined):
-    # add geo to ranking data
-    ranking_data_with_geo = data_joined.drop(columns=["project_id_number", 'relation_type', 'name', 'address', 'duration', 'year'])
-    ranking_data_with_geo = ranking_data_with_geo.drop_duplicates(['university','subject'])
-    overall_situation_mean = ranking_data_with_geo.groupby('university')['overall_study_situation'].agg(np.mean)
-    ranking_data_ready_to_plot = ranking_data_with_geo.drop_duplicates('university')
-    ranking_data_ready_to_plot = ranking_data_ready_to_plot.drop(columns=['overall_study_situation'])
-    overall_situation_mean_df = pd.DataFrame([overall_situation_mean.values, overall_situation_mean.index],
-                                             index=['overall_study_situation', 'university']).T
-    ranking_data_ready_to_plot = ranking_data_ready_to_plot.merge(overall_situation_mean_df, on='university')
-    return ranking_data_ready_to_plot
-
-def add_projects_per_institutes(projects_data_with_geo):
-    #unique_inst_count = len(projects_data_with_geo.name.unique())
-    #unique_address_count = len(projects_data_with_geo.address.unique())
-
-    project_count_per_inst = projects_data_with_geo['address'].value_counts().rename_axis('address').reset_index(name="project_count")
-    project_count_per_inst_geo = projects_data_with_geo.merge(project_count_per_inst, on='address', how='left')
-    return  project_count_per_inst_geo
-
-def preprocess_ranking_data(ranking_data):
-    #data types and removing ','
-    ranking_data.total_number_of_students = pd.to_numeric(ranking_data['total_number_of_students'].str.replace(',', ''))
-    ranking_data.population_of_the_town = pd.to_numeric(ranking_data['population_of_the_town'].str.replace(',', ''))
-    ranking_data.proportion_of_students_in_the_town = pd.to_numeric(ranking_data['proportion_of_students_in_the_town'])
-    ranking_data.students_at_this_campus = ranking_data.students_at_this_campus.str.replace(",","").astype(float)
-
-    #add institute id column
-    universities_unique = pd.Series(ranking_data['university'].unique())
-    universities_df = pd.DataFrame({'university':universities_unique.values,'institute_id_ranking' : universities_unique.index})
-    ranking_data = ranking_data.merge(universities_df, on='university')
-    ranking_data = ranking_data[ranking_data.columns.tolist()[-1:] + ranking_data.columns.tolist()[:-1]]   #id to first column
-
-    return ranking_data
 
 def select_subject_ranking(ranking_data, subject_name):
     only_subject = ranking_data[ranking_data['subject'] == subject_name]
     return  only_subject
-
-
-
-# def preprocess_projects_data():
-#      #load and merge project and institute data
-#      projects = pd.read_csv('gepris/extracted_project_data.csv')
-#      institutes = pd.read_csv("gepris/extracted_institution_data.csv")
-#      relations = pd.read_csv("gepris/project_institution_relations.csv")
-#      projects_data = projects.merge(relations, left_on='project_id_number', right_on='project_id_number').merge(
-#           institutes, left_on='institution_id', right_on='institution_id')
-#      projects_data = projects_data.drop(['title','project_abstract','participating_subject_areas_full_string',
-#                                          'description','phone','fax','email','internet','parent_project_id',
-#                                          'dfg_verfahren'],axis=1)
-#
-#      #remove start and end years are NaN
-#      print(str(len(projects_data[projects_data.funding_start_year.isnull() & projects_data.funding_end_year.isnull()]))+
-#            " projects dropped with funding end and start NaN")
-#      projects_data = projects_data[~(projects_data.funding_start_year.isnull() & projects_data.funding_end_year.isnull())]
-#
-#      #add column project duration
-#      projects_data['duration'] = (projects_data.funding_end_year + 1 - projects_data.funding_start_year).fillna(
-#          0).astype(int)
-#      mean_duration = projects_data.duration.mean()
-#
-#      #select only projects after 2014
-#      projects_data = projects_data[projects_data.funding_start_year > 2014]
-#      projects_data = add_rows_for_each_project_year(projects_data, mean_duration)
-#      projects_data = projects_data.drop(columns=['funding_start_year', 'funding_end_year'])
-#      projects_data.to_pickle(filename_preprocessed_project_data)
-
-def seperate_german_and_international_projects_data(projects_data):
-     series_bool_is_german = projects_data.address.str.contains("Deutschland") #filter in german and others
-     german_institutes = projects_data.loc[series_bool_is_german].reset_index(drop=True)
-     international_institutes = projects_data.loc[~series_bool_is_german].reset_index(drop=True)
-     return [german_institutes,international_institutes]
 
 def merge_projects_joined_and_subjects(projects):
     subjects = pd.read_csv('gepris/project_ids_to_participating_subject_areas.csv')
