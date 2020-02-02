@@ -54,7 +54,10 @@ export function createBarChart(name, group, filterCb) {
     .on("end", brushended));
 
   function brushended() {
-    if (!d3.event.sourceEvent && !d3.event.selection) return;
+    if (!d3.event.sourceEvent) return;
+    if (!d3.event.selection) {
+      return filterCb(x.domain()[0, 1])
+    }
 
     const valueRange = d3.event.selection
       .map(sel => Math.round(sel / x.step()))

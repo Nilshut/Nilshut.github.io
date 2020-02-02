@@ -130,6 +130,8 @@ async function showDetails(data) {
 }
 
 async function draw(links, nodes) {
+  console.log('links', links);
+  console.log('nodes', nodes);
   let color_before_highlight;
   let node_r;
 

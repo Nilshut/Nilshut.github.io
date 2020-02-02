@@ -19,7 +19,10 @@ export function init(filterData, nodeData, linkData) {
   }
 
   const filterRange = (dimension) => (from, to) => {
-    dimension.filterRange([from, to]);
+    dimension.filterAll();
+    if (from && to) {
+      dimension.filterRange([from, to]);
+    }
     return getFilteredData();
   }
 
