@@ -1,3 +1,4 @@
+import { createBarChart } from './bar-chart.js';
 import { init } from './crossfilter.js';
 
 let r_factor = 2;
@@ -10,8 +11,6 @@ async function loadDataNetwork() {
     nodes: await d3.csv('nodes_with_institutes.csv'),
     links: await d3.csv('links.csv')
   };
-
-  const cf = init(await d3.csv('filter_data.csv'), dataNetwork.nodes);
 
   dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
   const nodeNames = dataNetwork.links.reduce((n, l) => {
@@ -29,28 +28,58 @@ async function loadDataNetwork() {
   return dataNetwork;
 }
 
-async function loadDataFilter() {
-  const dataFilter = await d3.csv('filter_data.csv');
-
-  return dataFilter;
+function loadDataFilter() {
+  return d3.csv('filter_data.csv');
 }
 
 export async function main() {
   const dataNetwork = await loadDataNetwork();
+  const cf = init(await loadDataFilter(), dataNetwork.nodes, dataNetwork.links);
+
   dataNetwork.links = dataNetwork.links.map(d => Object.create(d));
   dataNetwork.nodes = dataNetwork.nodes.map(d => Object.create(d));
 
   setup();
 
+  createBarChart('year-group', cf.yearGroup, (from, to) => {
+    const filteredData = cf.filterYear(from, to);
+
+    const links = filteredData.links.map(d => Object.create(d));
+    const nodes = filteredData.nodes.map(d => Object.create(d));
+    draw(links, nodes);
+  });
+
+  createBarChart('duration-group', cf.durationGroup, (from, to) => {
+    const filteredData = cf.filterDuration(from, to);
+
+    const links = filteredData.links.map(d => Object.create(d));
+    const nodes = filteredData.nodes.map(d => Object.create(d));
+    draw(links, nodes);
+  });
+
+  createBarChart('institution-group', cf.institutionGroup, (from, to) => {
+    const filteredData = cf.filterInstitution(from, to);
+
+    const links = filteredData.links.map(d => Object.create(d));
+    const nodes = filteredData.nodes.map(d => Object.create(d));
+    draw(links, nodes);
+  });
+
   draw(dataNetwork.links, dataNetwork.nodes);
 }
 
 async function setup() {
+  const root = d3.select('body')
+    .append('div')
+      .attr('style', 'display: flex; flex-direction: column; height: 100%;')
+  root.append('div')
+    .attr('class', 'filters')
+    .attr('style', 'width: 300px;');
 
-  const forceDirectedGraph = d3.select('body')
+  const forceDirectedGraph = root
   .append('div')
   .attr('class', 'splitLayout')
-  .attr('style', 'display: flex; height: 100%')
+  .attr('style', 'display: flex; flex: auto;')
     .append('svg')
       .attr('style', 'outline: thin solid black; flex: auto;');
 

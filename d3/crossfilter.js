@@ -1,4 +1,4 @@
-export function init(filterData, nodeData) {
+export function init(filterData, nodeData, linkData) {
   const cf = crossfilter(filterData);
 
   const yearDim = cf.dimension(d => d.year);
@@ -10,7 +10,12 @@ export function init(filterData, nodeData) {
   const getUniqueIds = (projectIds) => [...new Set(projectIds)];
   const getFilteredData = () => {
     const uniqueProjectIds = getUniqueIds(getProjectIds());
-    return nodeData.filter(d => uniqueProjectIds.includes(d.project_id_number));
+    const nodes = nodeData.filter(d => uniqueProjectIds.includes(d.project_id_number));
+    const personIds = nodes.map(node => node.person_id);
+    return {
+      nodes,
+      links: linkData.filter(d => personIds.includes(d.source) && personIds.includes(d.target))
+    };
   }
 
   const filterRange = (dimension) => (from, to) => {
@@ -21,6 +26,9 @@ export function init(filterData, nodeData) {
   return {
     filterYear: filterRange(yearDim),
     filterDuration: filterRange(durationDim),
-    filterInstitution: filterRange(institutionDim)
+    filterInstitution: filterRange(institutionDim),
+    yearGroup: yearDim.group(),
+    durationGroup: durationDim.group(),
+    institutionGroup: institutionDim.group()
   }
 }
