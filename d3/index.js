@@ -8,8 +8,8 @@ const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 async function loadDataNetwork() {
   const dataNetwork = {
-    nodes: await d3.csv('nodes_with_institutes.csv'),
-    links: await d3.csv('links.csv')
+    nodes: await d3.csv('data/nodes.csv'),
+    links: await d3.csv('data/links.csv')
   };
 
   dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
@@ -29,7 +29,7 @@ async function loadDataNetwork() {
 }
 
 function loadDataFilter() {
-  return d3.csv('filter_data.csv');
+  return d3.csv('data/filter_data.csv');
 }
 
 export async function main() {
@@ -118,7 +118,7 @@ async function setup() {
     .attr("width", 100)
     .attr("height", 100);
 
-  showDetails({ institution_name: '', person_name: ''});
+  showDetails({ institution_name: ' ', person_name: ' '});
 }
 
 async function showDetails(data) {
@@ -151,7 +151,7 @@ async function draw(links, nodes) {
     .data(nodes)
     .join('circle')
       .attr('r', 5)
-      .attr('fill', d => colorScale(d.institution_id))
+      .attr('fill', d => colorScale(d.institution_name))
       .call(drag(simulation))
       .on("mouseover", function (d) {
         color_before_highlight = d3.select(this).attr("fill")

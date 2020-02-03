@@ -1,7 +1,7 @@
 export function init(filterData, nodeData, linkData) {
   const cf = crossfilter(filterData);
 
-  const yearDim = cf.dimension(d => d.year);
+  const yearDim = cf.dimension(d => d.funding_start_year);
   const durationDim = cf.dimension(d => d.duration);
   const institutionDim = cf.dimension(d => d.institution_id);
   const projectDim = cf.dimension(d => d.project_id_number);

@@ -100,25 +100,6 @@ def main():
     if (not path.exists(filename_persons_projects)):
         persons_projects.to_csv(filename_persons_projects, index=False, float_format='%.0f')
 
-    #------------------------------- nodes -------------------------------
-
-    nodes = nodes.drop_duplicates('person_id')
-    nodes = nodes.rename(columns={"name" : "person_name"})
-
-    people_institutes = pd.read_csv("gepris/people_joined_with_institutions.csv")
-    people_institutes = people_institutes[['person_id','institution_id']]
-    people_institutes = people_institutes.dropna().astype('int64')
-
-    #add institutes name
-    institutes = pd.read_csv("gepris/extracted_institution_data.csv")
-    institutes = institutes.drop(['phone','fax','email','internet','address'],axis=1)
-    nodes = nodes.merge(people_institutes,on='person_id')
-    nodes = nodes.merge(institutes, on='institution_id')
-
-    #save to csv
-    if (not path.exists(filename_nodes_csv)):
-        nodes.to_csv(filename_nodes_csv, index=False, float_format='%.0f')
-
     #----------------------------- links --------------------------------
 
 
@@ -173,6 +154,30 @@ def main():
     # save to csv
     if (not path.exists(filename_subject_data)):
         project_to_subject.to_csv(filename_subject_data, index=False)
+
+    #------------------------------- nodes -------------------------------
+
+    nodes = nodes.drop_duplicates('person_id')
+    nodes = nodes.rename(columns={"name" : "person_name"})
+
+    people_institutes = pd.read_csv("gepris/people_joined_with_institutions.csv")
+    people_institutes = people_institutes[['person_id','institution_id']]
+    people_institutes = people_institutes.dropna().astype('int64')
+
+    #add institutes name
+    institutes = pd.read_csv("gepris/extracted_institution_data.csv")
+    institutes = institutes.drop(['phone','fax','email','internet','address'],axis=1)
+    nodes = nodes.merge(people_institutes,on='person_id')
+    nodes = nodes.merge(institutes, on='institution_id')
+
+    nodes = nodes.rename(columns={"name": "institution_name"})
+    #nodes = nodes[nodes.project_id_number.isin(filter_data.project_id_number)]  #keep only projects which are in filter_data
+
+    #TODO BE CARFULL! NODES ARENOT UNIQUE, DROP PROJECT_ID, information is already in persons_project
+
+    #save to csv
+    if (not path.exists(filename_nodes_csv)):
+        nodes.to_csv(filename_nodes_csv, index=False, float_format='%.0f')
 
     print("DEBUG")
 
