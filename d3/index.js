@@ -12,18 +12,18 @@ async function loadDataNetwork() {
     links: await d3.csv('data/links.csv')
   };
 
-  dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
-  const nodeNames = dataNetwork.links.reduce((n, l) => {
-    if (!n.includes(l.source)) {
-      n = [...n, l.source];
-    }
-    if (!n.includes(l.target)) {
-      n = [...n, l.target];
-    }
-    return n;
-  }, []);
-
-  dataNetwork.nodes = dataNetwork.nodes.filter(n => nodeNames.includes(n.person_id));
+  // dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
+  // const nodeNames = dataNetwork.links.reduce((n, l) => {
+  //   if (!n.includes(l.source)) {
+  //     n = [...n, l.source];
+  //   }
+  //   if (!n.includes(l.target)) {
+  //     n = [...n, l.target];
+  //   }
+  //   return n;
+  // }, []);
+  //
+  // dataNetwork.nodes = dataNetwork.nodes.filter(n => nodeNames.includes(n.person_id));
 
   return dataNetwork;
 }
@@ -65,7 +65,7 @@ export async function main() {
     draw(links, nodes);
   });
 
-  draw(dataNetwork.links, dataNetwork.nodes);
+  //draw(dataNetwork.links, dataNetwork.nodes);
 }
 
 async function setup() {

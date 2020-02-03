@@ -171,9 +171,9 @@ def main():
     nodes = nodes.merge(institutes, on='institution_id')
 
     nodes = nodes.rename(columns={"name": "institution_name"})
-    #nodes = nodes[nodes.project_id_number.isin(filter_data.project_id_number)]  #keep only projects which are in filter_data
-
-    #TODO BE CARFULL! NODES ARENOT UNIQUE, DROP PROJECT_ID, information is already in persons_project
+    nodes = nodes[nodes.project_id_number.isin(filter_data.project_id_number)]  #keep only projects which are in filter_data
+    nodes = nodes.drop(['project_id_number'],axis=1)
+    nodes = nodes[~nodes.person_id.duplicated()]
 
     #save to csv
     if (not path.exists(filename_nodes_csv)):
