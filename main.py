@@ -172,7 +172,7 @@ def main():
 
     nodes = nodes.rename(columns={"name": "institution_name"})
     nodes = nodes[nodes.project_id_number.isin(filter_data.project_id_number)]  #keep only projects which are in filter_data
-    nodes = nodes.drop(['project_id_number'],axis=1)
+    #nodes = nodes.drop(['project_id_number'],axis=1)
     nodes = nodes[~nodes.person_id.duplicated()]
 
     #save to csv
