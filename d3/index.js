@@ -106,7 +106,7 @@ async function setup() {
   //detail text selected node
   const details = d3.select('body .splitLayout').append('div')
     .attr('class', 'datailsText')
-    .attr('style', 'outline: solid green; width: 400px; height: 100%;')
+    .attr('style', 'background-color:lightgrey; outline: thin solid black; width: 400px; height: 100%;') 
 
   details.append("div")
     .attr('class', 'universityField')

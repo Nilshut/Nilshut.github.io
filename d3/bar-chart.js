@@ -31,7 +31,7 @@ export function createBarChart(name, group, filterCb) {
     .data(group.all())
     // .data(["background", "foreground"])
     .join("rect")
-      .attr('fill', 'blue')
+      .attr('fill', 'lightblue')
       .attr("class", d => `${d.key} bar`)
       .attr("x", function(d) { return x(d.key); })
       .attr("width", x.bandwidth())
