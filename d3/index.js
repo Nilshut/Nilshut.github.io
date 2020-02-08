@@ -32,9 +32,13 @@ function loadDataFilter() {
   return d3.csv('data/filtered_data.csv', d3.autoType);
 }
 
+function loadConnections() {
+  return d3.csv('data/persons_projects.csv', d3.autoType);
+}
+
 export async function main() {
   const dataNetwork = await loadDataNetwork();
-  const cf = init(await loadDataFilter(), dataNetwork.nodes, dataNetwork.links);
+  const cf = init(await loadDataFilter(), await loadConnections(), dataNetwork.nodes, dataNetwork.links);
 
   dataNetwork.links = dataNetwork.links.map(d => Object.create(d));
   dataNetwork.nodes = dataNetwork.nodes.map(d => Object.create(d));
@@ -57,19 +61,11 @@ export async function main() {
     draw(links, nodes);
   });
 
-  // createBarChart('Subject', 'subject-group', cf.subjectGroup, (val) => {
-  //   const filteredData = cf.filterSubject(val);
-
-  //   const links = filteredData.links.map(d => Object.create(d));
-  //   const nodes = filteredData.nodes.map(d => Object.create(d));
-  //   draw(links, nodes);
-  // });
-
-  createDropdown('institutions', cf.institutionLabels, val => {
+  createDropdown('Institution', 'institution', cf.institutionLabels, val => {
     cf.filterInstitution(val);
   });
 
-  createDropdown('subject', cf.subjectLabels, val => {
+  createDropdown('Subject', 'subject', cf.subjectLabels, val => {
     cf.filterSubject(val);
   });
 
@@ -126,7 +122,7 @@ async function setup() {
     .attr("width", 100)
     .attr("height", 100);
 
-  showDetails({ institution_name: ' ', person_name: ' '});
+  // showDetails({ institution_name: ' ', person_name: ' '});
 }
 
 async function showDetails(data) {

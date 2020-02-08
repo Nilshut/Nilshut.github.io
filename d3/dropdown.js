@@ -1,5 +1,7 @@
-export function createDropdown(name, labels, filterCb) {
+export function createDropdown(title, name, labels, filterCb) {
   const filtersNode = d3.select('.filters');
+
+  filtersNode.append('div').text(title);
 
   const input = filtersNode.append('input')
     .attr('list', `${name}-list`);
