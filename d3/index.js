@@ -1,6 +1,6 @@
 import { createBarChart } from './bar-chart.js';
 import { init } from './crossfilter.js';
-
+import { createDropdown } from './dropdown.js';
 let r_factor = 2;
 const height = 2000;
 const width = 2000;
@@ -8,8 +8,8 @@ const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 async function loadDataNetwork() {
   const dataNetwork = {
-    nodes: await d3.csv('data/nodes.csv'),
-    links: await d3.csv('data/links.csv')
+    nodes: await d3.csv('data/nodes.csv', d3.autoType),
+    links: await d3.csv('data/links.csv', d3.autoType)
   };
 
   // dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
@@ -29,7 +29,7 @@ async function loadDataNetwork() {
 }
 
 function loadDataFilter() {
-  return d3.csv('data/filter_data.csv');
+  return d3.csv('data/filtered_data.csv', d3.autoType);
 }
 
 export async function main() {
@@ -57,12 +57,16 @@ export async function main() {
     draw(links, nodes);
   });
 
-  createBarChart('institution-group', cf.institutionGroup, (from, to) => {
-    const filteredData = cf.filterInstitution(from, to);
+  createBarChart('subject-group', cf.subjectGroup, (val) => {
+    const filteredData = cf.filterSubject(val);
 
     const links = filteredData.links.map(d => Object.create(d));
     const nodes = filteredData.nodes.map(d => Object.create(d));
     draw(links, nodes);
+  });
+
+  createDropdown('institutions', cf.institutionLabels, val => {
+    cf.filterInstitution(val);
   });
 
   //draw(dataNetwork.links, dataNetwork.nodes);
@@ -106,7 +110,7 @@ async function setup() {
   //detail text selected node
   const details = d3.select('body .splitLayout').append('div')
     .attr('class', 'datailsText')
-    .attr('style', 'background-color:lightgrey; outline: thin solid black; width: 400px; height: 100%;') 
+    .attr('style', 'background-color:lightgrey; outline: thin solid black; width: 400px; height: 100%;')
 
   details.append("div")
     .attr('class', 'universityField')
