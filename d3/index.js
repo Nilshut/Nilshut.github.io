@@ -69,6 +69,10 @@ export async function main() {
     cf.filterInstitution(val);
   });
 
+  createDropdown('subject', cf.subjectLabels, val => {
+    cf.filterSubject(val);
+  });
+
   //draw(dataNetwork.links, dataNetwork.nodes);
 }
 
