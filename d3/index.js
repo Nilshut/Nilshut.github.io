@@ -41,7 +41,7 @@ export async function main() {
 
   setup();
 
-  createBarChart('year-group', cf.yearGroup, (from, to) => {
+  createBarChart('Year', 'year-group', cf.yearGroup, (from, to) => {
     const filteredData = cf.filterYear(from, to);
 
     const links = filteredData.links.map(d => Object.create(d));
@@ -49,7 +49,7 @@ export async function main() {
     draw(links, nodes);
   });
 
-  createBarChart('duration-group', cf.durationGroup, (from, to) => {
+  createBarChart('Duration (in years)', 'duration-group', cf.durationGroup, (from, to) => {
     const filteredData = cf.filterDuration(from, to);
 
     const links = filteredData.links.map(d => Object.create(d));
@@ -57,13 +57,13 @@ export async function main() {
     draw(links, nodes);
   });
 
-  createBarChart('subject-group', cf.subjectGroup, (val) => {
-    const filteredData = cf.filterSubject(val);
+  // createBarChart('Subject', 'subject-group', cf.subjectGroup, (val) => {
+  //   const filteredData = cf.filterSubject(val);
 
-    const links = filteredData.links.map(d => Object.create(d));
-    const nodes = filteredData.nodes.map(d => Object.create(d));
-    draw(links, nodes);
-  });
+  //   const links = filteredData.links.map(d => Object.create(d));
+  //   const nodes = filteredData.nodes.map(d => Object.create(d));
+  //   draw(links, nodes);
+  // });
 
   createDropdown('institutions', cf.institutionLabels, val => {
     cf.filterInstitution(val);

@@ -1,12 +1,12 @@
 
-export function createBarChart(name, group, filterCb) {
+export function createBarChart(title, name, group, filterCb) {
   const y = d3.scaleLinear()
     .range([100, 0])
     .domain([0, group.top(1)[0].value]);
 
   const xDomain = Object.values(group.all()).map(d => d.key);
   const x = d3.scaleBand()
-    .range([0, xDomain.length * 20])
+    .range([0, xDomain.length * 30])
     .domain(xDomain)
     .padding(0.1)
 
@@ -14,6 +14,8 @@ export function createBarChart(name, group, filterCb) {
   const height = y.range()[0];
 
   const filtersNode = d3.select('.filters');
+
+  filtersNode.append('div').text(title);
 
   const g = filtersNode.append("svg")
     .attr("width", width)
