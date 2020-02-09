@@ -29,11 +29,20 @@ async function loadDataNetwork() {
 }
 
 function loadDataFilter() {
-  return d3.csv('data/filtered_data.csv', d3.autoType);
+  return d3.csv('data/filtered_data.csv', row => {
+    row = d3.autoType(row);
+    if (typeof row.person_ids === 'string') {
+      row.person_ids = d3.autoType(row.person_ids.split(','));
+    } else {
+      row.person_ids = [row.person_ids];
+    }
+
+    return row;
+  });
 }
 
 function loadConnections() {
-  return d3.csv('data/persons_projects.csv', d3.autoType);
+  return d3.csv('data/filtered_persons_projects.csv', d3.autoType);
 }
 
 export async function main() {
@@ -45,7 +54,7 @@ export async function main() {
 
   setup();
 
-  createBarChart('Year', 'year-group', cf.yearGroup, (from, to) => {
+  createBarChart('Start year', 'year-group', cf.yearGroup, (from, to) => {
     const filteredData = cf.filterYear(from, to);
 
     const links = filteredData.links.map(d => Object.create(d));
@@ -62,11 +71,27 @@ export async function main() {
   });
 
   createDropdown('Institution', 'institution', cf.institutionLabels, val => {
-    cf.filterInstitution(val);
+    const filteredData = cf.filterInstitution(val);
+
+    const links = filteredData.links.map(d => Object.create(d));
+    const nodes = filteredData.nodes.map(d => Object.create(d));
+    draw(links, nodes);
   });
 
   createDropdown('Subject', 'subject', cf.subjectLabels, val => {
-    cf.filterSubject(val);
+    const filteredData = cf.filterSubject(val);
+
+    const links = filteredData.links.map(d => Object.create(d));
+    const nodes = filteredData.nodes.map(d => Object.create(d));
+    draw(links, nodes);
+  });
+
+  createDropdown('Person', 'person', cf.personLabels, val => {
+    const filteredData = cf.filterPerson(val);
+
+    const links = filteredData.links.map(d => Object.create(d));
+    const nodes = filteredData.nodes.map(d => Object.create(d));
+    draw(links, nodes);
   });
 
   //draw(dataNetwork.links, dataNetwork.nodes);
