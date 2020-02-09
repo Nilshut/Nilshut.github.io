@@ -1,4 +1,4 @@
-export function init(filterData, connectionData, nodeData, linkData) {
+export function init(filterData, connectionData, nodeData) {
   const cf = crossfilter(filterData);
 
   const yearDim = cf.dimension(d => d.funding_start_year);
@@ -13,14 +13,48 @@ export function init(filterData, connectionData, nodeData, linkData) {
   const getUniqueIds = (projectIds) => [...new Set(projectIds)];
   const getFilteredData = () => {
     const uniqueProjectIds = getUniqueIds(getProjectIds());
-    const personIds = connectionData
-      .filter(d => uniqueProjectIds.includes(d.project_id_number))
-      .map(node => node.person_id);
+    const projectConnections = connectionData.filter(d => uniqueProjectIds.includes(d.project_id_number));
+    const personIds = projectConnections.map(node => node.person_id);
+    const nodes = nodeData.filter(d => personIds.includes(d.person_id));
 
-    return {
-      nodes: nodeData.filter(d => personIds.includes(d.person_id)),
-      links: linkData.filter(d => personIds.includes(d.source) && personIds.includes(d.target))
-    };
+    return { nodes, links: getLinks(projectConnections, personIds) };
+  }
+
+  const getLinks = (projectConnections, personIds) => {
+    const personsByProject = projectConnections
+      .reduce((groupByProject, currentConnection) => {
+        if (!groupByProject[currentConnection.project_id_number]) {
+          groupByProject[currentConnection.project_id_number] = [];
+        }
+        groupByProject[currentConnection.project_id_number].push(currentConnection.person_id);
+        return groupByProject;
+      }, {});
+
+    const connectedPersons = personIds.reduce((result, personId) => {
+      result[personId] = [...new Set(Object.values(personsByProject)
+        .reduce((connectedPersonIds, personsInProject) => {
+          if (personsInProject.includes(personId)) {
+            return [...connectedPersonIds, ...personsInProject.filter(p => p !== personId)];
+          }
+          return connectedPersonIds;
+        }, [])
+      )];
+      return result;
+    }, {})
+
+    return Object.entries(connectedPersons).reduce((result, [personId, connectedPersonIds]) => {
+      connectedPersonIds.forEach(c => {
+        let connection = result.find(d => d.source === +personId && d.target === c || d.source === c && d.target === +personId);
+        if (!connection) {
+          result.push({ source: +personId, target: c, value: 0 });
+          connection = result[result.length - 1];
+        }
+
+        connection.value += 1;
+      });
+
+      return result;
+    }, [])
   }
 
   const filterRange = (dimension) => (from, to) => {

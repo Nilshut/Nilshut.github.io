@@ -1,6 +1,5 @@
 const csv = require('csvtojson')
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const fs = require('fs');
 
 function loadData(file) {
   return csv().fromFile(file);

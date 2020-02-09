@@ -6,6 +6,10 @@ const height = 2000;
 const width = 2000;
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
+function loadNodes() {
+  return d3.csv('data/nodes.csv', d3.autoType);
+}
+
 async function loadDataNetwork() {
   const dataNetwork = {
     nodes: await d3.csv('data/nodes.csv', d3.autoType),
@@ -46,55 +50,29 @@ function loadConnections() {
 }
 
 export async function main() {
-  const dataNetwork = await loadDataNetwork();
-  const cf = init(await loadDataFilter(), await loadConnections(), dataNetwork.nodes, dataNetwork.links);
-
-  dataNetwork.links = dataNetwork.links.map(d => Object.create(d));
-  dataNetwork.nodes = dataNetwork.nodes.map(d => Object.create(d));
+  const cf = init(await loadDataFilter(), await loadConnections(), await loadNodes());
 
   setup();
 
   createBarChart('Start year', 'year-group', cf.yearGroup, (from, to) => {
-    const filteredData = cf.filterYear(from, to);
-
-    const links = filteredData.links.map(d => Object.create(d));
-    const nodes = filteredData.nodes.map(d => Object.create(d));
-    draw(links, nodes);
+    draw(cf.filterYear(from, to));
   });
 
   createBarChart('Duration (in years)', 'duration-group', cf.durationGroup, (from, to) => {
-    const filteredData = cf.filterDuration(from, to);
-
-    const links = filteredData.links.map(d => Object.create(d));
-    const nodes = filteredData.nodes.map(d => Object.create(d));
-    draw(links, nodes);
+    draw(cf.filterDuration(from, to));
   });
 
   createDropdown('Institution', 'institution', cf.institutionLabels, val => {
-    const filteredData = cf.filterInstitution(val);
-
-    const links = filteredData.links.map(d => Object.create(d));
-    const nodes = filteredData.nodes.map(d => Object.create(d));
-    draw(links, nodes);
+    draw(cf.filterInstitution(val));
   });
 
   createDropdown('Subject', 'subject', cf.subjectLabels, val => {
-    const filteredData = cf.filterSubject(val);
-
-    const links = filteredData.links.map(d => Object.create(d));
-    const nodes = filteredData.nodes.map(d => Object.create(d));
-    draw(links, nodes);
+    draw(cf.filterSubject(val));
   });
 
   createDropdown('Person', 'person', cf.personLabels, val => {
-    const filteredData = cf.filterPerson(val);
-
-    const links = filteredData.links.map(d => Object.create(d));
-    const nodes = filteredData.nodes.map(d => Object.create(d));
-    draw(links, nodes);
+    draw(cf.filterPerson(val));
   });
-
-  //draw(dataNetwork.links, dataNetwork.nodes);
 }
 
 async function setup() {
@@ -110,9 +88,10 @@ async function setup() {
   .attr('class', 'splitLayout')
   .attr('style', 'display: flex; flex: auto;')
     .append('svg')
+      .attr('class', 'network')
       .attr('style', 'outline: thin solid black; flex: auto;');
 
-  const networkGroup = forceDirectedGraph.append('g').attr('class', 'network');
+  const networkGroup = forceDirectedGraph.append('g');
 
   networkGroup.append('g')
     .attr('class', 'links')
@@ -125,8 +104,10 @@ async function setup() {
     .attr('stroke-width', 1.5);
 
   forceDirectedGraph.call(d3.zoom()
-    .extent([[0, 0], [width, height]])
-    .scaleExtent([0.25, 10])
+    .extent(d => {
+      return d;
+    })
+    // .scaleExtent([0.25, 10])
     .on('zoom', () => {
       networkGroup.attr('transform', d3.event.transform)
     })
@@ -158,9 +139,13 @@ async function showDetails(data) {
       .text(`Name: ${data.person_name}`);
 }
 
-async function draw(links, nodes) {
+async function draw(data) {
+  const links = data.links.map(d => Object.create(d));
+  const nodes = data.nodes.map(d => Object.create(d));
+
   console.log('links', links);
   console.log('nodes', nodes);
+
   let color_before_highlight;
   let node_r;
 
@@ -189,12 +174,12 @@ async function draw(links, nodes) {
           .attr("fill", "red")
           .attr("r", r_factor * node_r)
         showDetails(d)
-    })
+      })
       .on("mouseout", function (d) {
         d3.select(this)
           .attr("fill", color_before_highlight)
           .attr("r", node_r);
-    })
+      });
 
   node.append('title').text(d => d.person_name);
 
@@ -209,6 +194,24 @@ async function draw(links, nodes) {
       .attr('cx', d => d.x)
       .attr('cy', d => d.y);
   });
+
+  const bBox = d3.select('.network').node().getBBox();
+  // x0,y0--x1,y0--x2,y0
+  //   |      |      |
+  // x0,y1--x1,y1--x2,y1
+  //   |      |      |
+  // x0,y2--x1,y2--x2,y2
+  const x0 = bBox.x;
+  const x1 = x0 + bBox.width / 2
+  const x2 = x0 + bBox.width;
+  const y0 = bBox.y;
+  const y1 = y0 + bBox.height / 2
+  const y2 = y0 + bBox.height;
+
+  const leftPoint = simulation.find(x0, y1);
+  const rightPoint = simulation.find(x2, y1);
+  const topPoint = simulation.find(x1, y0);
+  const bottomPoint = simulation.find(x1, y2);
 }
 
 function drag(simulation) {
