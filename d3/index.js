@@ -1,38 +1,20 @@
 import { createBarChart } from './bar-chart.js';
 import { init } from './crossfilter.js';
 import { createDropdown } from './dropdown.js';
-let r_factor = 2;
+const hightlightFactor = 2;
 const height = 2000;
 const width = 2000;
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+let connections;
+let filterData;
+let nodes;
 
 function loadNodes() {
   return d3.csv('data/nodes.csv', d3.autoType);
 }
 
-async function loadDataNetwork() {
-  const dataNetwork = {
-    nodes: await d3.csv('data/nodes.csv', d3.autoType),
-    links: await d3.csv('data/links.csv', d3.autoType)
-  };
-
-  // dataNetwork.links = dataNetwork.links.filter((l, i) => i < 1000);
-  // const nodeNames = dataNetwork.links.reduce((n, l) => {
-  //   if (!n.includes(l.source)) {
-  //     n = [...n, l.source];
-  //   }
-  //   if (!n.includes(l.target)) {
-  //     n = [...n, l.target];
-  //   }
-  //   return n;
-  // }, []);
-  //
-  // dataNetwork.nodes = dataNetwork.nodes.filter(n => nodeNames.includes(n.person_id));
-
-  return dataNetwork;
-}
-
-function loadDataFilter() {
+function loadFilterData() {
   return d3.csv('data/filtered_data.csv', row => {
     row = d3.autoType(row);
     if (typeof row.person_ids === 'string') {
@@ -50,7 +32,11 @@ function loadConnections() {
 }
 
 export async function main() {
-  const cf = init(await loadDataFilter(), await loadConnections(), await loadNodes());
+  nodes = await loadNodes();
+  connections = await loadConnections();
+  filterData = await loadFilterData();
+
+  const cf = init(filterData, connections, nodes);
 
   setup();
 
@@ -104,39 +90,89 @@ async function setup() {
     .attr('stroke-width', 1.5);
 
   forceDirectedGraph.call(d3.zoom()
-    .extent(d => {
-      return d;
-    })
-    // .scaleExtent([0.25, 10])
+    .extent([0, 0], [width, height])
+    .scaleExtent([0.25, 10])
     .on('zoom', () => {
-      networkGroup.attr('transform', d3.event.transform)
+      networkGroup.attr('transform', d3.event.transform);
     })
   );
 
   //detail text selected node
   const details = d3.select('body .splitLayout').append('div')
-    .attr('class', 'datailsText')
+    .attr('class', 'details')
     .attr('style', 'background-color:lightgrey; outline: thin solid black; width: 400px; height: 100%;')
 
-  details.append("div")
-    .attr('class', 'universityField')
-    .attr("width", 100)
-    .attr("height", 100);
+  details
+    .append('div')
+    .attr('class', 'personDetails')
+    .append('div')
+    .attr('class', 'title')
+    .text('Name');
 
-  details.append("div")
-    .attr('class', 'personNameField')
-    .attr("width", 100)
-    .attr("height", 100);
+  details
+    .append('div')
+    .attr('class', 'institutionDetails')
+    .append('div')
+    .attr('class', 'title')
+    .text('Institution');
 
-  // showDetails({ institution_name: ' ', person_name: ' '});
+  details
+    .append('div')
+    .attr('class', 'projectDetails')
+    .append('div')
+    .attr('class', 'title')
+    .text('Projects');
 }
 
 async function showDetails(data) {
-  const details = d3.select('.datailsText')
-    details.select(".universityField")
-      .text(`University: ${data.institution_name}`);
-    details.select(".personNameField")
-      .text(`Name: ${data.person_name}`);
+  const nodeData = getDetails(data);
+
+  d3.select('.personDetails')
+    .selectAll('.personNameField')
+    .data([nodeData])
+    .join("div")
+      .attr('class', 'personNameField')
+      .attr("width", 100)
+      .attr("height", 100)
+      .text(d => d.person_name);
+
+  d3.select('.institutionDetails')
+    .selectAll('.institutionNameField')
+    .data([nodeData])
+    .join("div")
+      .attr('class', 'institutionNameField')
+      .attr("width", 100)
+      .attr("height", 100)
+      .text(d => d.institution_name);
+
+  d3.select('.projectDetails')
+    .selectAll('.projects')
+    .data(nodeData.projects)
+    .join("div")
+      .attr('class', 'projects')
+      .attr("width", 100)
+      .attr("height", 100)
+      .text(d => d.title);
+}
+
+function getDetails(nodeData) {
+  const projectIds = connections
+    .filter(connection => connection.person_id === nodeData.person_id)
+    .map(connection => connection.project_id_number);
+  const projects = filterData
+    .filter(d => projectIds.includes(d.project_id_number))
+    .reduce((projectData, project) => {
+      let dataForCurrentProject = projectData.find(d => d.project_id_number === project.project_id_number);
+      if (!dataForCurrentProject) {
+        projectData.push(project);
+        dataForCurrentProject = projectData[projectData.length - 1];
+        dataForCurrentProject.institutions = [];
+      }
+      dataForCurrentProject.institutions.push({ institution_name: project.institution_name });
+      return projectData;
+    }, []);
+
+  return { person_name: nodeData.person_name, institution_name: nodeData.institution_name, projects }
 }
 
 async function draw(data) {
@@ -146,8 +182,8 @@ async function draw(data) {
   console.log('links', links);
   console.log('nodes', nodes);
 
-  let color_before_highlight;
-  let node_r;
+  let colorBeforeHighlight;
+  const nodeRadius = 5;;
 
   const simulation = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d => d.person_id))
@@ -164,21 +200,20 @@ async function draw(data) {
     .selectAll('circle')
     .data(nodes)
     .join('circle')
-      .attr('r', 5)
+      .attr('r', nodeRadius)
       .attr('fill', d => colorScale(d.institution_name))
       .call(drag(simulation))
       .on("mouseover", function (d) {
-        color_before_highlight = d3.select(this).attr("fill")
-        node_r = d3.select(this).attr("r")
+        colorBeforeHighlight = d3.select(this).attr("fill");
         d3.select(this)
           .attr("fill", "red")
-          .attr("r", r_factor * node_r)
-        showDetails(d)
+          .attr("r", hightlightFactor * nodeRadius);
+        showDetails(d);
       })
-      .on("mouseout", function (d) {
+      .on("mouseout", function () {
         d3.select(this)
-          .attr("fill", color_before_highlight)
-          .attr("r", node_r);
+          .attr("fill", colorBeforeHighlight)
+          .attr("r", nodeRadius);
       });
 
   node.append('title').text(d => d.person_name);

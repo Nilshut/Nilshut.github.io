@@ -6,18 +6,23 @@ export function init(filterData, connectionData, nodeData) {
   const institutionDim = cf.dimension(d => d.institution_id);
   const institutionNameDim = cf.dimension(d => d.institution_name);
   const projectDim = cf.dimension(d => d.project_id_number);
+  const projectNameDim = cf.dimension(d => d.project_name);
   const subjectDim = cf.dimension(d => d.subject || 'N / A');
   const personDim = cf.dimension(d => d.person_ids, true);
 
-  const getProjectIds = () => cf.allFiltered().map(d => projectDim.accessor(d));
-  const getUniqueIds = (projectIds) => [...new Set(projectIds)];
+  const getUniqueProjectIds = () => [...new Set(cf.allFiltered().map(d => projectDim.accessor(d)))];
+  const getUniqueProjectNames = () => [...new Set(cf.allFiltered().map(d => projectNameDim.accessor(d)))];
   const getFilteredData = () => {
-    const uniqueProjectIds = getUniqueIds(getProjectIds());
+    const uniqueProjectIds = getUniqueProjectIds();
     const projectConnections = connectionData.filter(d => uniqueProjectIds.includes(d.project_id_number));
     const personIds = projectConnections.map(node => node.person_id);
     const nodes = nodeData.filter(d => personIds.includes(d.person_id));
 
-    return { nodes, links: getLinks(projectConnections, personIds) };
+    return {
+      nodes,
+      links: getLinks(projectConnections, personIds),
+      projects: getUniqueProjectNames()
+    };
   }
 
   const getLinks = (projectConnections, personIds) => {
