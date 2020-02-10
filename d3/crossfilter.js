@@ -108,6 +108,7 @@ export function init(filterData, connectionData, nodeData) {
     subjectDim,
     filterRange,
     filterExact,
+    getFilteredData,
     personLabels: personLabels(),
     institutionLabels: labels(institutionDim, institutionNameDim),
     subjectLabels: labels(subjectDim, subjectDim),

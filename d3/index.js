@@ -5,6 +5,7 @@ const hightlightFactor = 2;
 const height = 2000;
 const width = 2000;
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+let colorDimension = 'institution_name';
 
 let connections;
 let filterData;
@@ -59,15 +60,20 @@ export async function main() {
   createDropdown('Person', 'person', cf.personLabels, val => {
     draw(cf.filterExact(cf.personDim)(val));
   });
+
+  createColorToggle(cf);
 }
 
 async function setup() {
   const root = d3.select('body')
     .append('div')
-      .attr('style', 'display: flex; flex-direction: column; height: 100%;')
+      .attr('style', 'display: flex; flex-direction: column; height: 100%;');
+
   root.append('div')
     .attr('class', 'filters')
     .attr('style', 'width: 300px;');
+
+  root.append('div').attr('class', 'switch-group');
 
   root
     .append('div')
@@ -220,7 +226,7 @@ async function draw(data) {
     .data(nodes)
     .join('circle')
       .attr('r', nodeRadius)
-      .attr('fill', d => colorScale(d.institution_name))
+      .attr('fill', d => colorScale(d[colorDimension]))
       .call(drag(simulation))
       .on("mouseover", function (d) {
         colorBeforeHighlight = d3.select(this).attr("fill");
@@ -313,6 +319,19 @@ function uniquePersonIdList(linkList, initialList = []) {
     }
     return r;
   }, initialList);
+}
+
+function createColorToggle(cf) {
+  const colorToggleGroup = d3.select('.switch-group');
+  colorToggleGroup.append('span').attr('class', 'switch-label').text('Institutions');
+  const colorToggle = colorToggleGroup.append('label').attr('class', 'switch');
+  colorToggle.append('input').attr('type', 'checkbox');
+  const slider = colorToggle.append('span').attr('class', 'slider');
+  slider.on('click', () => {
+    colorDimension = colorDimension === 'institution_name' ? 'subject' : 'institution_name';
+    draw(cf.getFilteredData());
+  });
+  colorToggleGroup.append('span').attr('class', 'switch-label').text('Subjects');
 }
 
 main();
