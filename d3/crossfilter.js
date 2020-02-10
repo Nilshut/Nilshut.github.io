@@ -14,6 +14,9 @@ export function init(filterData, connectionData, nodeData) {
   const getUniqueProjectNames = () => [...new Set(cf.allFiltered().map(d => projectNameDim.accessor(d)))];
   const getFilteredData = () => {
     const uniqueProjectIds = getUniqueProjectIds();
+    if (uniqueProjectIds.length > 1000) {
+      return;
+    }
     const projectConnections = connectionData.filter(d => uniqueProjectIds.includes(d.project_id_number));
     const personIds = projectConnections.map(node => node.person_id);
     const nodes = nodeData.filter(d => personIds.includes(d.person_id));
@@ -97,19 +100,16 @@ export function init(filterData, connectionData, nodeData) {
   };
 
   return {
-    filterYear: filterRange(yearDim),
-    filterDuration: filterRange(durationDim),
-    filterInstitution: filterExact(institutionDim),
-    filterSubject: filterExact(subjectDim),
-    filterPerson: filterExact(personDim),
-    yearGroup: yearDim.group(),
-    durationGroup: durationDim.group(),
-    institutionGroup: institutionDim.group(),
-    subjectGroup: subjectDim.group(),
+    projectDim,
+    personDim,
+    yearDim,
+    durationDim,
+    institutionDim,
+    subjectDim,
+    filterRange,
+    filterExact,
+    personLabels: personLabels(),
     institutionLabels: labels(institutionDim, institutionNameDim),
     subjectLabels: labels(subjectDim, subjectDim),
-    personDim,
-    personGroup: personDim.group(),
-    personLabels: personLabels()
   }
 }

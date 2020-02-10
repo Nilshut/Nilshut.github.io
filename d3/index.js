@@ -40,24 +40,24 @@ export async function main() {
 
   setup();
 
-  createBarChart('Start year', 'year-group', cf.yearGroup, (from, to) => {
-    draw(cf.filterYear(from, to));
+  createBarChart('Start year', 'year-group', cf.yearDim, (from, to) => {
+    draw(cf.filterRange(cf.yearDim)(from, to));
   });
 
-  createBarChart('Duration (in years)', 'duration-group', cf.durationGroup, (from, to) => {
-    draw(cf.filterDuration(from, to));
+  createBarChart('Duration (in years)', 'duration-group', cf.durationDim, (from, to) => {
+    draw(cf.filterRange(cf.durationDim)(from, to));
   });
 
   createDropdown('Institution', 'institution', cf.institutionLabels, val => {
-    draw(cf.filterInstitution(val));
+    draw(cf.filterExact(cf.institutionDim)(val));
   });
 
   createDropdown('Subject', 'subject', cf.subjectLabels, val => {
-    draw(cf.filterSubject(val));
+    draw(cf.filterExact(cf.subjectDim)(val));
   });
 
   createDropdown('Person', 'person', cf.personLabels, val => {
-    draw(cf.filterPerson(val));
+    draw(cf.filterExact(cf.personDim)(val));
   });
 }
 
@@ -69,10 +69,18 @@ async function setup() {
     .attr('class', 'filters')
     .attr('style', 'width: 300px;');
 
-  const forceDirectedGraph = root
-  .append('div')
-  .attr('class', 'splitLayout')
-  .attr('style', 'display: flex; flex: auto;')
+  root
+    .append('div')
+      .attr('class', 'too-much-data')
+      .attr('style', 'outline: thin solid black; flex: auto;')
+      .text('Too much data, filter your data first.');
+
+  const splitLayout = root
+    .append('div')
+    .attr('class', 'splitLayout')
+    .attr('style', 'display: none;');
+
+  const forceDirectedGraph = splitLayout
     .append('svg')
       .attr('class', 'network')
       .attr('style', 'outline: thin solid black; flex: auto;');
@@ -97,8 +105,7 @@ async function setup() {
     })
   );
 
-  //detail text selected node
-  const details = d3.select('body .splitLayout').append('div')
+  const details = splitLayout.append('div')
     .attr('class', 'details')
     .attr('style', 'background-color:lightgrey; outline: thin solid black; width: 400px; height: 100%;')
 
@@ -175,12 +182,24 @@ function getDetails(nodeData) {
   return { person_name: nodeData.person_name, institution_name: nodeData.institution_name, projects }
 }
 
+// data is undefined if there is too much data
 async function draw(data) {
+  if (data) {
+    d3.select('.too-much-data').attr('style', 'display: none;');
+    d3.select('.splitLayout').attr('style', 'display: flex; flex: auto;');
+  } else {
+    d3.select('.too-much-data').attr('style', 'outline: thin solid black; flex: auto;');
+    d3.select('.splitLayout').attr('style', 'display: none;');
+    return;
+  }
+
   const links = data.links.map(d => Object.create(d));
   const nodes = data.nodes.map(d => Object.create(d));
 
   console.log('links', links);
   console.log('nodes', nodes);
+
+
 
   let colorBeforeHighlight;
   const nodeRadius = 5;;

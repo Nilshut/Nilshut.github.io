@@ -1,5 +1,6 @@
 
-export function createBarChart(title, name, group, filterCb) {
+export function createBarChart(title, name, dimension, filterCb) {
+  const group = dimension.group();
   const y = d3.scaleLinear()
     .range([100, 0])
     .domain([0, group.top(1)[0].value]);
@@ -21,7 +22,6 @@ export function createBarChart(title, name, group, filterCb) {
     .attr("width", width)
     .attr("height", height + 30)
       .append("g");
-        // .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   g.append("clipPath")
     .attr("id", `clip-${name}`)
@@ -31,7 +31,6 @@ export function createBarChart(title, name, group, filterCb) {
 
   g.selectAll(".bar")
     .data(group.all())
-    // .data(["background", "foreground"])
     .join("rect")
       .attr('fill', 'lightblue')
       .attr("class", d => `${d.key} bar`)
@@ -39,10 +38,6 @@ export function createBarChart(title, name, group, filterCb) {
       .attr("width", x.bandwidth())
       .attr("y", function(d) { return y(d.value); })
       .attr("height", function(d) { return height - y(d.value); });
-            // .datum(group.all());
-
-  // g.selectAll(".foreground.bar")
-  //   .attr("clip-path", `url(#clip-${name})`);
 
   g.append("g")
     .attr("class", "axis")
@@ -58,7 +53,7 @@ export function createBarChart(title, name, group, filterCb) {
   function brushended() {
     if (!d3.event.sourceEvent) return;
     if (!d3.event.selection) {
-      return filterCb(x.domain()[0, x.domain().length - 1])
+      return filterCb();
     }
 
     const valueRange = d3.event.selection
