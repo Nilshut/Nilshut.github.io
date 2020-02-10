@@ -90,7 +90,7 @@ async function setup() {
     .attr('stroke-width', 1.5);
 
   forceDirectedGraph.call(d3.zoom()
-    .extent([0, 0], [width, height])
+    .extent([[0, 0], [width, height]])
     .scaleExtent([0.25, 10])
     .on('zoom', () => {
       networkGroup.attr('transform', d3.event.transform);
