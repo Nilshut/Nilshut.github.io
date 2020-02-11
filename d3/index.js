@@ -214,8 +214,6 @@ async function draw(data) {
     .force('charge', d3.forceManyBody())
     .force('center', d3.forceCenter(outerClientRect.width / 2, outerClientRect.height / 2));
 
-  console.log(simulation.nodes());
-
   const link = d3.select('g.links')
     .selectAll('line')
     .data(links)

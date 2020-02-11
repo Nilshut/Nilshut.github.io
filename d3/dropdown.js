@@ -7,8 +7,8 @@ export function createDropdown(title, name, labels, filterCb) {
     .attr('list', `${name}-list`);
 
   input.on('change', function () {
-    const id = labels.find(l => l.label === this.value).id
-    filterCb(id);
+    const label = labels.find(l => l.label === this.value);
+    filterCb(label ? label.id : undefined);
   });
 
   filtersNode.append('datalist')
