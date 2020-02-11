@@ -2,10 +2,9 @@ import { createBarChart } from './bar-chart.js';
 import { init } from './crossfilter.js';
 import { createDropdown } from './dropdown.js';
 const hightlightFactor = 2;
-const height = 2000;
-const width = 2000;
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 let colorDimension = 'institution_name';
+let zoom;
 
 let connections;
 let filterData;
@@ -103,13 +102,14 @@ async function setup() {
     .attr('stroke', '#fff')
     .attr('stroke-width', 1.5);
 
-  forceDirectedGraph.call(d3.zoom()
-    .extent([[0, 0], [width, height]])
-    .scaleExtent([0.25, 10])
+  zoom = d3.zoom()
+    // .extent([[0, 0], [width, height]])
+    // .scaleExtent([0.5, 2])
     .on('zoom', () => {
       networkGroup.attr('transform', d3.event.transform);
-    })
-  );
+    });
+
+  forceDirectedGraph.call(zoom);
 
   const details = splitLayout.append('div')
     .attr('class', 'details')
@@ -205,15 +205,16 @@ async function draw(data) {
   console.log('links', links);
   console.log('nodes', nodes);
 
-
-
   let colorBeforeHighlight;
-  const nodeRadius = 5;;
+  const nodeRadius = 10;
+  const outerClientRect = d3.select('.network').node().getClientRects()[0];
 
   const simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.person_id))
+    .force('link', d3.forceLink(links).distance(200).id(d => d.person_id))
     .force('charge', d3.forceManyBody())
-    .force('center', d3.forceCenter(width / 2, height / 2));
+    .force('center', d3.forceCenter(outerClientRect.width / 2, outerClientRect.height / 2));
+
+  console.log(simulation.nodes());
 
   const link = d3.select('g.links')
     .selectAll('line')
@@ -254,24 +255,6 @@ async function draw(data) {
       .attr('cx', d => d.x)
       .attr('cy', d => d.y);
   });
-
-  const bBox = d3.select('.network').node().getBBox();
-  // x0,y0--x1,y0--x2,y0
-  //   |      |      |
-  // x0,y1--x1,y1--x2,y1
-  //   |      |      |
-  // x0,y2--x1,y2--x2,y2
-  const x0 = bBox.x;
-  const x1 = x0 + bBox.width / 2
-  const x2 = x0 + bBox.width;
-  const y0 = bBox.y;
-  const y1 = y0 + bBox.height / 2
-  const y2 = y0 + bBox.height;
-
-  const leftPoint = simulation.find(x0, y1);
-  const rightPoint = simulation.find(x2, y1);
-  const topPoint = simulation.find(x1, y0);
-  const bottomPoint = simulation.find(x1, y2);
 }
 
 function drag(simulation) {
@@ -290,35 +273,6 @@ function drag(simulation) {
       d.fx = null;
       d.fy = null;
     });
-}
-
-function drawRelatedTo(personId) {
-  const personIds = getPersonIdsRelatedTo([personId]);
-  const nodes = dataNetwork.nodes.filter(n => personIds.includes(n.person_id));
-  const links = dataNetwork.links.filter(l => personIds.includes(l.source.person_id) && personIds.includes(l.target.person_id));
-
-  //console.log(personIds, nodes, links);
-  draw(links, nodes);
-}
-
-function getPersonIdsRelatedTo(roots, depth = 5) {
-  const newRoots = dataNetwork.links.filter(l => roots.includes(l.source.person_id) || roots.includes(l.target.person_id));
-  if (depth) {
-    return getPersonIdsRelatedTo(uniquePersonIdList(newRoots, roots), depth - 1);
-  }
-  return uniquePersonIdList(newRoots, roots);
-}
-
-function uniquePersonIdList(linkList, initialList = []) {
-  return linkList.reduce((r, l) => {
-    if (!r.includes(l.source.person_id)) {
-      r = [...r, l.source.person_id];
-    }
-    if (!r.includes(l.target.person_id)) {
-      r = [...r, l.target.person_id];
-    }
-    return r;
-  }, initialList);
 }
 
 function createColorToggle(cf) {

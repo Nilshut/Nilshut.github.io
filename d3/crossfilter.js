@@ -1,3 +1,5 @@
+const dataAmountThreshold = 1000;
+
 export function init(filterData, connectionData, nodeData) {
   const cf = crossfilter(filterData);
 
@@ -14,7 +16,7 @@ export function init(filterData, connectionData, nodeData) {
   const getUniqueProjectNames = () => [...new Set(cf.allFiltered().map(d => projectNameDim.accessor(d)))];
   const getFilteredData = () => {
     const uniqueProjectIds = getUniqueProjectIds();
-    if (uniqueProjectIds.length > 1000) {
+    if (uniqueProjectIds.length > dataAmountThreshold) {
       return;
     }
     const projectConnections = connectionData.filter(d => uniqueProjectIds.includes(d.project_id_number));
