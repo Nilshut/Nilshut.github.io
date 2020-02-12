@@ -7,7 +7,7 @@ export function createBarChart(title, name, dimension, filterCb) {
 
   const xDomain = Object.values(group.all()).map(d => d.key);
   const x = d3.scaleBand()
-    .range([0, xDomain.length * 20])
+    .range([0, xDomain.length * 24])
     .domain(xDomain)
     .padding(0.1)
 
@@ -20,7 +20,7 @@ export function createBarChart(title, name, dimension, filterCb) {
 
   const g = filtersNode.append("svg")
     .attr("width", width)
-    .attr("height", height + 30)
+    .attr("height", height + 50)
       .append("g");
 
   g.append("clipPath")
@@ -31,13 +31,13 @@ export function createBarChart(title, name, dimension, filterCb) {
 
   g.append("g")
     .attr("class", "axis")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", `translate(0,${height + 20})`)
     .call(d3.axisBottom(x));
 
   g.append("g")
     .attr("class", "brush")
     .call(d3.brushX()
-    .extent([[0, 0], [width, height]])
+    .extent([[0, 20], [width, height]])
     .on("end", brushended));
 
   function brushended() {
@@ -64,8 +64,19 @@ export function createBarChart(title, name, dimension, filterCb) {
         .attr("class", d => `${d.key} bar`)
         .attr("x", function(d) { return x(d.key); })
         .attr("width", x.bandwidth())
-        .attr("y", function(d) { return y(d.value); })
+        .attr("y", function(d) { return y(d.value) + 20; })
         .attr("height", function(d) { return height - y(d.value); });
+
+    g.selectAll(".count")
+      .data(group.all())
+      .join("text")
+        .attr("class", d => `${d.key} text`)
+        .attr('text-anchor', 'middle')
+        .attr("x", function(d) { return x(d.key) + 11; })
+        .attr("width", x.bandwidth())
+        .attr("y", function(d) { return y(d.value) + 18; })
+        .attr("height", function(d) { return height - y(d.value); })
+        .text(d => d.value);
   }
 
   redraw();

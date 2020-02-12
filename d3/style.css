@@ -80,8 +80,11 @@ input:checked + .slider:before {
   margin: 10px;
 }
 
+.filters svg {
+  margin-top: 10px;
+}
+
 .switch-group,
-.filters svg,
 .filters input {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -176,4 +179,8 @@ input:checked + .slider:before {
 
 .project-details .details-title {
   padding-left: 10px;
+}
+
+text.text {
+  font-size: 10px;
 }
