@@ -69,18 +69,20 @@ async function setup() {
     .append('div')
       .attr('style', 'display: flex; flex-direction: column; height: 100%;');
 
-  root.append('div')
-    .attr('class', 'filters')
-    .attr('style', 'width: 300px;');
+  const filtersNode = root.append('div').attr('class', 'filters');
 
-  root.append('div').text('Switch color dimension');
+  filtersNode.append('div').attr('class', 'bar-charts');
+  filtersNode.append('div').attr('class', 'dropdowns');
+
+  root.append('div').attr('class', 'title').text('Switch color dimension');
   root.append('div').attr('class', 'switch-group');
 
   root
     .append('div')
       .attr('class', 'too-much-data')
       .attr('style', 'outline: thin solid black; flex: auto;')
-      .text('Too much data, filter your data first.');
+      .append('span')
+        .text('Too much data, filter your data first.');
 
   const splitLayout = root
     .append('div')
@@ -114,20 +116,19 @@ async function setup() {
   forceDirectedGraph.call(zoom);
 
   const details = splitLayout.append('div')
-    .attr('class', 'details')
-    .attr('style', 'background-color:lightgrey; outline: thin solid black; width: 400px; height: 100%;')
+    .attr('class', 'details');
 
   details
     .append('div')
     .attr('class', 'personDetails')
-    .append('div')
+    .append('span')
     .attr('class', 'title')
     .text('Name');
 
   details
     .append('div')
     .attr('class', 'institutionDetails')
-    .append('div')
+    .append('span')
     .attr('class', 'title')
     .text('Institution');
 
@@ -147,7 +148,7 @@ async function showDetails(data) {
   d3.select('.personDetails')
     .selectAll('.personNameField')
     .data([nodeData])
-    .join("div")
+    .join("span")
       .attr('class', 'personNameField')
       .attr("width", 100)
       .attr("height", 100)
@@ -156,7 +157,7 @@ async function showDetails(data) {
   d3.select('.institutionDetails')
     .selectAll('.institutionNameField')
     .data([nodeData])
-    .join("div")
+    .join("span")
       .attr('class', 'institutionNameField')
       .attr("width", 100)
       .attr("height", 100)
@@ -168,10 +169,10 @@ async function showDetails(data) {
     .join("li")
       .attr('class', 'project');
   project
-    .selectAll('.title')
+    .selectAll('.project-title')
     .data(d => [d])
     .join('span')
-    .attr('class', 'title')
+    .attr('class', 'project-title')
     .text(d => d.title);
   project
     .selectAll('.time-frame')

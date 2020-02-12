@@ -62,3 +62,68 @@ input:checked + .slider:before {
 .switch-label {
   padding: 5px;
 }
+
+* {
+  font-family: sans-serif;
+}
+
+.title {
+  font-weight: bold;
+  font-size: larger;
+}
+
+.filters .bar-charts, .filters .dropdowns {
+  display: flex;
+}
+
+.filters .filter {
+  margin: 10px;
+}
+
+.switch-group,
+.filters svg,
+.filters input {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.switch-group .title {
+  margin-left: 10px;
+}
+
+.too-much-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: large;
+}
+
+.filter input {
+  width: 250px;
+  height: 30px;
+}
+
+.details {
+  background-color :aliceblue;
+  outline: thin solid black;
+  width: 400px;
+  height: 100%;
+  padding: 10px;
+}
+
+.personDetails, .institutionDetails {
+  display: flex;
+  align-items: flex-end;
+}
+
+.personDetails .title, .institutionDetails .title, .project span {
+  margin-right: 4px;
+}
+
+.project-title {
+  font-weight: bold;
+}
+
+.time-frame {
+  font-style: italic;
+}
