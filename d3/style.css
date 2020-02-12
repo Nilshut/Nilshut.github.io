@@ -116,8 +116,13 @@ input:checked + .slider:before {
   align-items: flex-end;
 }
 
-.personDetails .title, .institutionDetails .title, .project span {
-  margin-right: 4px;
+.details-title {
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.project span {
+  margin-right: 8px;
 }
 
 .project-title {
@@ -126,4 +131,49 @@ input:checked + .slider:before {
 
 .time-frame {
   font-style: italic;
+}
+
+.project-list {
+  list-style: none;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.project {
+  border-top: 1px solid gray;
+  padding: 10px;
+}
+
+.project:last-of-type {
+  border-bottom: 1px solid gray;
+}
+
+.subtitle {
+  display: flex;
+  justify-content: space-between;
+}
+
+.institutions li {
+  list-style: none;
+  padding: 10px;
+  background: white;
+  margin-bottom: 10px;
+}
+
+.institutions {
+  padding-left: 0px;
+  padding-top: 10px;
+}
+
+.person-details {
+  padding: 10px;
+}
+
+.institution-details {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.project-details .details-title {
+  padding-left: 10px;
 }

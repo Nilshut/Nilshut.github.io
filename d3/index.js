@@ -120,50 +120,50 @@ async function setup() {
 
   details
     .append('div')
-    .attr('class', 'personDetails')
+    .attr('class', 'person-details')
     .append('span')
-    .attr('class', 'title')
-    .text('Name');
+    .attr('class', 'details-title')
+    .text('Name:');
 
   details
     .append('div')
-    .attr('class', 'institutionDetails')
+    .attr('class', 'institution-details')
     .append('span')
-    .attr('class', 'title')
-    .text('Institution');
+    .attr('class', 'details-title')
+    .text('Institution:');
 
   const projectDetails = details
     .append('div')
-    .attr('class', 'projectDetails');
+    .attr('class', 'project-details');
   projectDetails.append('div')
-    .attr('class', 'title')
-    .text('Projects');
+    .attr('class', 'details-title')
+    .text('Projects:');
   projectDetails.append('ul')
-  .attr('class', 'projectList');
+  .attr('class', 'project-list');
 }
 
 async function showDetails(data) {
   const nodeData = getDetails(data);
 
-  d3.select('.personDetails')
-    .selectAll('.personNameField')
+  d3.select('.person-details')
+    .selectAll('.value')
     .data([nodeData])
     .join("span")
-      .attr('class', 'personNameField')
+      .attr('class', 'value')
       .attr("width", 100)
       .attr("height", 100)
       .text(d => d.person_name);
 
-  d3.select('.institutionDetails')
-    .selectAll('.institutionNameField')
+  d3.select('.institution-details')
+    .selectAll('.value')
     .data([nodeData])
     .join("span")
-      .attr('class', 'institutionNameField')
+      .attr('class', 'value')
       .attr("width", 100)
       .attr("height", 100)
       .text(d => d.institution_name);
 
-  const project = d3.select('.projectDetails .projectList')
+  const project = d3.select('.project-details .project-list')
     .selectAll('.project')
     .data(nodeData.projects)
     .join("li")
@@ -171,27 +171,32 @@ async function showDetails(data) {
   project
     .selectAll('.project-title')
     .data(d => [d])
-    .join('span')
+    .join('div')
     .attr('class', 'project-title')
     .text(d => d.title);
-  project
-    .selectAll('.time-frame')
+  const subtitle = project
+    .selectAll('.subtitle')
     .data(d => [d])
-    .join('span')
-    .attr('class', 'time-frame')
-    .text(d => `(${ d.funding_start_year || '' } - ${ d.funding_end_year || '' })`);
-  project
+    .join('div')
+    .attr('class', 'subtitle');
+  subtitle
     .selectAll('.subject')
     .data(d => [d])
     .join('span')
     .attr('class', 'subject')
     .text(d => d.subject || '');
+  subtitle
+    .selectAll('.time-frame')
+    .data(d => [d])
+    .join('span')
+    .attr('class', 'time-frame')
+    .text(d => `(${ d.funding_start_year || '?' } - ${ d.funding_end_year || '?' })`);
   project
     .selectAll('.institutions')
     .data(d => [d])
     .join('ul')
     .attr('class', 'institutions')
-    .text('Institutions')
+    .text('Institutions:')
     .selectAll('.institution')
     .data(d => d.institutions.filter(d => d))
     .join('li')
