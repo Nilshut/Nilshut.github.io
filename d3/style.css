@@ -181,6 +181,6 @@ input:checked + .slider:before {
   padding-left: 10px;
 }
 
-text.text {
+text.count {
   font-size: 10px;
 }

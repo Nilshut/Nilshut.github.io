@@ -70,7 +70,7 @@ export function createBarChart(title, name, dimension, filterCb) {
     g.selectAll(".count")
       .data(group.all())
       .join("text")
-        .attr("class", d => `${d.key} text`)
+        .attr("class", d => `${d.key} count`)
         .attr('text-anchor', 'middle')
         .attr("x", function(d) { return x(d.key) + 11; })
         .attr("width", x.bandwidth())
