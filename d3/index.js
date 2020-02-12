@@ -131,12 +131,14 @@ async function setup() {
     .attr('class', 'title')
     .text('Institution');
 
-  details
+  const projectDetails = details
     .append('div')
-    .attr('class', 'projectDetails')
-    .append('div')
+    .attr('class', 'projectDetails');
+  projectDetails.append('div')
     .attr('class', 'title')
     .text('Projects');
+  projectDetails.append('ul')
+  .attr('class', 'projectList');
 }
 
 async function showDetails(data) {
@@ -160,22 +162,48 @@ async function showDetails(data) {
       .attr("height", 100)
       .text(d => d.institution_name);
 
-  d3.select('.projectDetails')
-    .selectAll('.projects')
+  const project = d3.select('.projectDetails .projectList')
+    .selectAll('.project')
     .data(nodeData.projects)
-    .join("div")
-      .attr('class', 'projects')
-      .attr("width", 100)
-      .attr("height", 100)
-      .text(d => d.title);
+    .join("li")
+      .attr('class', 'project');
+  project
+    .selectAll('.title')
+    .data(d => [d])
+    .join('span')
+    .attr('class', 'title')
+    .text(d => d.title);
+  project
+    .selectAll('.time-frame')
+    .data(d => [d])
+    .join('span')
+    .attr('class', 'time-frame')
+    .text(d => `(${ d.funding_start_year || '' } - ${ d.funding_end_year || '' })`);
+  project
+    .selectAll('.subject')
+    .data(d => [d])
+    .join('span')
+    .attr('class', 'subject')
+    .text(d => d.subject || '');
+  project
+    .selectAll('.institutions')
+    .data(d => [d])
+    .join('ul')
+    .attr('class', 'institutions')
+    .text('Institutions')
+    .selectAll('.institution')
+    .data(d => d.institutions.filter(d => d))
+    .join('li')
+      .text(d => d.institution_name);
+
 }
 
 function getDetails(nodeData) {
   const projectIds = connections
     .filter(connection => connection.person_id === nodeData.person_id)
     .map(connection => connection.project_id_number);
-  const projects = filterData
-    .filter(d => projectIds.includes(d.project_id_number))
+  const relevantFilterData = filterData.filter(d => projectIds.includes(d.project_id_number));
+  const projects = relevantFilterData
     .reduce((projectData, project) => {
       let dataForCurrentProject = projectData.find(d => d.project_id_number === project.project_id_number);
       if (!dataForCurrentProject) {
@@ -187,7 +215,11 @@ function getDetails(nodeData) {
       return projectData;
     }, []);
 
-  return { person_name: nodeData.person_name, institution_name: nodeData.institution_name, projects }
+  return {
+    person_name: nodeData.person_name,
+    institution_name: nodeData.institution_name,
+    projects
+  }
 }
 
 // data is undefined if there is too much data
