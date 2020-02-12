@@ -67,16 +67,16 @@ export function createBarChart(title, name, dimension, filterCb) {
         .attr("y", function(d) { return y(d.value) + 20; })
         .attr("height", function(d) { return height - y(d.value); });
 
-    g.selectAll(".count")
-      .data(group.all())
-      .join("text")
-        .attr("class", d => `${d.key} count`)
-        .attr('text-anchor', 'middle')
-        .attr("x", function(d) { return x(d.key) + 11; })
-        .attr("width", x.bandwidth())
-        .attr("y", function(d) { return y(d.value) + 18; })
-        .attr("height", function(d) { return height - y(d.value); })
-        .text(d => d.value);
+    // g.selectAll(".count")
+    //   .data(group.all())
+    //   .join("text")
+    //     .attr("class", d => `${d.key} count`)
+    //     .attr('text-anchor', 'middle')
+    //     .attr("x", function(d) { return x(d.key) + 11; })
+    //     .attr("width", x.bandwidth())
+    //     .attr("y", function(d) { return y(d.value) + 18; })
+    //     .attr("height", function(d) { return height - y(d.value); })
+    //     .text(d => d.value);
   }
 
   redraw();
