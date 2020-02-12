@@ -9,6 +9,7 @@ let zoom;
 let connections;
 let filterData;
 let nodes;
+const redrawFilterFns = {};
 
 function loadNodes() {
   return d3.csv('data/nodes.csv', d3.autoType);
@@ -40,24 +41,24 @@ export async function main() {
 
   setup();
 
-  createBarChart('Start year', 'year-group', cf.yearDim, (from, to) => {
-    draw(cf.filterRange(cf.yearDim)(from, to));
+  redrawFilterFns['year'] = createBarChart('Start year', 'year', cf.yearDim, (from, to) => {
+    draw(cf.filterRange(cf.yearDim)(from, to), 'year');
   });
 
-  createBarChart('Duration (in years)', 'duration-group', cf.durationDim, (from, to) => {
-    draw(cf.filterRange(cf.durationDim)(from, to));
+  redrawFilterFns['duration'] = createBarChart('Duration (in years)', 'duration', cf.durationDim, (from, to) => {
+    draw(cf.filterRange(cf.durationDim)(from, to), 'duration');
   });
 
-  createDropdown('Institution', 'institution', cf.institutionLabels, val => {
-    draw(cf.filterExact(cf.institutionDim)(val));
+  redrawFilterFns['institution'] = createDropdown('Institution', 'institution', cf.institutionDim, cf.institutionLabels, val => {
+    draw(cf.filterExact(cf.institutionDim)(val), 'institution');
   });
 
-  createDropdown('Subject', 'subject', cf.subjectLabels, val => {
-    draw(cf.filterExact(cf.subjectDim)(val));
+  redrawFilterFns['subject'] = createDropdown('Subject', 'subject', cf.subjectDim, cf.subjectLabels, val => {
+    draw(cf.filterExact(cf.subjectDim)(val), 'subject');
   });
 
-  createDropdown('Person', 'person', cf.personLabels, val => {
-    draw(cf.filterExact(cf.personDim)(val));
+  redrawFilterFns['person'] = createDropdown('Person', 'person', cf.personDim, cf.personLabels, val => {
+    draw(cf.filterExact(cf.personDim)(val), 'person');
   });
 
   createColorToggle(cf);
@@ -72,6 +73,7 @@ async function setup() {
     .attr('class', 'filters')
     .attr('style', 'width: 300px;');
 
+  root.append('div').text('Switch color dimension');
   root.append('div').attr('class', 'switch-group');
 
   root
@@ -189,7 +191,9 @@ function getDetails(nodeData) {
 }
 
 // data is undefined if there is too much data
-async function draw(data) {
+async function draw(data, skipFilterRedraw) {
+  Object.entries(redrawFilterFns).forEach(([key, redraw]) => key === skipFilterRedraw ? undefined : redraw());
+
   if (data) {
     d3.select('.too-much-data').attr('style', 'display: none;');
     d3.select('.splitLayout').attr('style', 'display: flex; flex: auto;');

@@ -1,4 +1,5 @@
 const dataAmountThreshold = 1000;
+const notAvailable = 'N/A';
 
 export function init(filterData, connectionData, nodeData) {
   const cf = crossfilter(filterData);
@@ -9,7 +10,7 @@ export function init(filterData, connectionData, nodeData) {
   const institutionNameDim = cf.dimension(d => d.institution_name);
   const projectDim = cf.dimension(d => d.project_id_number);
   const projectNameDim = cf.dimension(d => d.project_name);
-  const subjectDim = cf.dimension(d => d.subject || 'N / A');
+  const subjectDim = cf.dimension(d => d.subject || notAvailable);
   const personDim = cf.dimension(d => d.person_ids, true);
 
   const getUniqueProjectIds = () => [...new Set(cf.allFiltered().map(d => projectDim.accessor(d)))];
@@ -87,7 +88,7 @@ export function init(filterData, connectionData, nodeData) {
     const ids = dim.group().all().map(({ key }) => key);
     return ids.map(dimId => ({
       id: dimId,
-      label: dimId === 'N / A' ? dimId : labelDim.accessor(
+      label: dimId === notAvailable ? dimId : labelDim.accessor(
         cf.all().find(d => dim.accessor(d) === dimId)
       )
     }));

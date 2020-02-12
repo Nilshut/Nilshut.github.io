@@ -29,16 +29,6 @@ export function createBarChart(title, name, dimension, filterCb) {
       .attr("width", width)
       .attr("height", height);
 
-  g.selectAll(".bar")
-    .data(group.all())
-    .join("rect")
-      .attr('fill', 'lightblue')
-      .attr("class", d => `${d.key} bar`)
-      .attr("x", function(d) { return x(d.key); })
-      .attr("width", x.bandwidth())
-      .attr("y", function(d) { return y(d.value); })
-      .attr("height", function(d) { return height - y(d.value); });
-
   g.append("g")
     .attr("class", "axis")
     .attr("transform", "translate(0," + height + ")")
@@ -65,6 +55,21 @@ export function createBarChart(title, name, dimension, filterCb) {
 
     filterCb(...valueRange);
   }
+
+  function redraw() {
+    g.selectAll(".bar")
+      .data(group.all())
+      .join("rect")
+        .attr('fill', 'lightblue')
+        .attr("class", d => `${d.key} bar`)
+        .attr("x", function(d) { return x(d.key); })
+        .attr("width", x.bandwidth())
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); });
+  }
+
+  redraw();
+  return redraw;
 }
 
 
