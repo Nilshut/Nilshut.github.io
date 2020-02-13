@@ -41,7 +41,7 @@ export async function main() {
 
   setup();
 
-  redrawFilterFns['year'] = createBarChart('Start year', 'year', cf.yearDim, (from, to) => {
+  redrawFilterFns['year'] = createBarChart('Project start year', 'year', cf.yearDim, (from, to) => {
     draw(cf.filterRange(cf.yearDim)(from, to), 'year');
   });
 
@@ -53,7 +53,7 @@ export async function main() {
     draw(cf.filterExact(cf.institutionDim)(val), 'institution');
   });
 
-  redrawFilterFns['subject'] = createDropdown('Subject', 'subject', cf.subjectDim, cf.subjectLabels, val => {
+  redrawFilterFns['subject'] = createDropdown('Academic field', 'subject', cf.subjectDim, cf.subjectLabels, val => {
     draw(cf.filterExact(cf.subjectDim)(val), 'subject');
   });
 
@@ -325,7 +325,7 @@ function createColorToggle(cf) {
     colorDimension = colorDimension === 'institution_name' ? 'subject' : 'institution_name';
     draw(cf.getFilteredData());
   });
-  colorToggleGroup.append('span').attr('class', 'switch-label').text('Subjects');
+  colorToggleGroup.append('span').attr('class', 'switch-label').text('Academic fields');
 }
 
 main();
