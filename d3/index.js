@@ -37,6 +37,7 @@ export async function main() {
   connections = await loadConnections();
   filterData = await loadFilterData();
 
+  // init crossfilter
   const cf = init(filterData, connections, nodes);
 
   setup();
