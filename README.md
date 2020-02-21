@@ -38,8 +38,10 @@ reasonably be stored in a person's memory for evaluation.
 Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
 as well as to compare them.\
 
-used Libraries: crossfilter2, d3
-DATA PREPARATION.\
+Data preparation.\
+In this project we are using the java script library d3 (https://github.com/d3/d3) for creating a dynamic, interactive data visualization. We derived the data of our visualization from the gepris dfg data. One table contains all the data we need for the filtering process (filtered_data.csv). For the filtering we are using the crossfilter2 library (https://github.com/crossfilter/crossfilter) which enables fast filtering over different filter dimensions. The filter process returns a list of projects, which satisfy the selected filter options. We use the second table (filtered_persons_projects.csv) which contains the connection between the projects and the people and the list of projects to get the information who worked in the selected projects. Furthermore we calculate links between the persons. We create links between persons who work together in a project and if they work together in multiple projects we account this. \
+Now we are ready for the network visualization: we draw a force directed graph with d3. The nodes represent the person and the links are the calculated connections between them. We enrich the node data with the third table (nodes.csv) including the person names and their institutions. \
+The user can interact with the visualization in many different ways. For example he can zoom into the network, select a node by hovering over it and see additional information to the person on the a sidebar. Also he can grab a node and change his position. To learn more about the different interaction possibilities see the [ Manual ](#manual).    
 
 ![](pics/data_er.png)
 
