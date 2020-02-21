@@ -20,12 +20,12 @@ We build a visualization tool with d3 for exploring connections from scientist i
 <a name="project_description"></a>
 ## Project description
 
-"Your network is your net worth." -- Porter Gale. We all know the importance of networking in science but often neglect it.
-"How might we help someone figure out another scientist's network?"
+"Your network is your net worth." -- Porter Gale. We all know the importance of networking in science but often neglect it.\
+"How might we help someone figure out another scientist's network?"\
 That is the question we asked ourselves at the start of this project. But it is not just professors that can find themselves
 in this situation - universities with an open chair, ambitious post-graduates looking for a mentor to guide them
 for a while, even students choosing which one of the country's many researchers they should contact with a thesis idea:
-They all need to take their person of interest's network into account. Simply type in the name and hit the button! We allow filtering for universities, academic fields and the dates and duration of projects jointly worked on. Mostly interested in the connections crafted in the last three years? No problem! Lots of projects with researchers from all over, but how many of these were at elite universities? We'll show you! Desperately looking for an addition to your team that can connect you to a Marine scientist? Now you can find out who best fits that need! All just a click away! And should you just want to browse through your university's staff, looking for some interesting connections, you have come to the right place! We allow you to selectively filter through the entire domain of DFG-funded researchers to find just what you are looking for.
+They all need to take their person of interest's network into account. Simply type in the name and hit the button! We allow filtering for universities, academic fields and the dates and duration of projects jointly worked on. Mostly interested in the connections crafted in the last three years? No problem! Lots of projects with researchers from all over, but how many of these were at elite universities? We'll show you! Desperately looking for an addition to your team that can connect you to a Marine scientist? Now you can find out who best fits that need! All just a click away! And should you just want to browse through your university's staff, looking for some interesting connections, you have come to the right place! We allow you to selectively filter through the entire domain of DFG-funded researchers to find just what you are looking for.\
 We do not know what constitutes a 'valuable' connection or a 'well-connected' scientist. Those are highly subjective
 questions that one can only answer for themselves. We provide the tool for you to analyse that which cannot
 be seen in a CV or heard in an interview or talk - we visualise networks.
@@ -39,15 +39,15 @@ those relationships were forged. While this data is mostly freely available, it 
 reasonably be stored in a person's memory for evaluation.
 
 Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
-as well as to compare them.
-DATA PREPARATION.
+as well as to compare them.\
+DATA PREPARATION.\
 Note that we do not aim to analyse our data but instead to aid analysis through visualisation.
 
 As we aim to visualise potentially very complex relations between people, a network presented itself as the best option.
 Due to the number of connections we wish to display, only a heatmap would have been a possible alternative. This option was disregarded because it seemed less intuitive and because most datsets displayed will be rather small, which works better with a network. Research into the comparison of networks yielded no results that we believed to constitute an easily understandable
 visualisation. As evaluating relationships is a very multi-faceted and deeply subjective task we aimed to give the user as much control as possible over the choice of which aspects of the people involved she wants to visualise. We identified the number of
 collaborations shared with another person, that person's home institution and research field as well as the years
-in which the collaborations took place and their duration as fields of interest that can be selected by. Other data, such as e-mail address of the people involved, while available seemed irrelevant. Thus, they have been omitted which also greatly reduces cluttering of information.
+in which the collaborations took place and their duration as fields of interest that can be selected by. Other data, such as e-mail address of the people involved, while available seemed irrelevant. Thus, they have been omitted which also greatly reduces cluttering of information.\
 The values of all the variables identified as relevant are broken into bins by which the user can select and combine at will. The data is thus interactively picked and observed. The binnings are intuitive and require no further explanation. As part of our maxim of handing control over to the user we decided to allow free roaming of the variable space. This allows the user to explore and compare what type of networks researchers that she has not previously taken into account have.
 
 We used a force-directed graph drawing algorithm to minimise edge-crossings and keep the graph as easily accessible by the human eye as possible. The thickness of the links between researchers reflects the intensity of their collaboration - the more projects shared, the thicker the line. Differing degrees of thickness are distinguishable by the human eye. Although differing lengths are known to be more easily distinguished, this would have influenced the shape of the graph and made it confusing. As to avoid cluttering of the screen, the networks are not shown until the data is sufficiently filtered.
@@ -56,7 +56,7 @@ Due to time constraints we were not able to include all our ideas. Among them, t
 
 
 Thinking aloud protocol:
-We showed our visualisation to another person with only the introduction that  this was a tool to visualise networks of DFG funded researchers. We learned a lot. For the uninitiated, the project start year and duration bar chart selection interface was very confusing. It was suggested to put the search bars on top. Our colour dimension was also not noticed for a long time and not intuitively understood. A further point of confusion was the fact that merely glossing over a node with the mouse leads to opening of the information sidebar on that person. Which node was expanded in the sidebar was not apparent and we should definitely introduce a highlighting feature for currently active node. Generally speaking, our visualisation's biggest drawback was a lack of guidance on how to use it.
+We showed our visualisation to another person with only the introduction that  this was a tool to visualise networks of DFG funded researchers. We learned a lot. For the uninitiated, the project start year and duration bar chart selection interface was very confusing. It was suggested to put the search bars on top. Our colour dimension was also not noticed for a long time and not intuitively understood. A further point of confusion was the fact that merely glossing over a node with the mouse leads to opening of the information sidebar on that person. Which node was expanded in the sidebar was not apparent and we should definitely introduce a highlighting feature for currently active node. Generally speaking, our visualisation's biggest drawback was a lack of guidance on how to use it.\
 Based on our validation, the threats mentioned in Munzner's 2009 paper were avoided. Our interaction technique was well received, although we should have given a better introduction to how it works. But once understood, the great degree of freedom offered to the user invited playing around with our visualisation. Our test person stated that this was a more intuitive and fun to work with approach than a heatmap or simple listing of connected people. The test person was generally interested in our tool and believed others would be too, although more research would have to be done to truly validate this.
 
 <a name="install"></a>
