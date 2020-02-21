@@ -76,21 +76,21 @@ __1. filtering area:__
 
 In the filter area there are filter options in five different dimensions: "Project start year", "Duration (in years)", "Institution", "Academic field" and "Person".
 
-![](filter_area.png)
+![](pics/filter_area.png)
 
 For filtering the dimensions "Project start year" and "Duration (in years)" you have to select an interval in the bar charts. The dimensions "Institution", "Academic field" and "Person" can be filtered by the text fields which support autocompletion and drop down features. Deselection is possible by clicking onto a bar chart or removing the text by the text fields. The filter (bar charts and autocomplition) adjust and show only the data which match to the selected filter. Here you can see an example filter and the resulting bar charts:      
 
-![](filter_example.png)
+![](pics/filter_example.png)
 
 __2. exploring area:__
 
 In the exploring area the network graph will be shown if the selected filter data include less than 1000 persons (due to performance reasons). If more than the required persons are selected you will see the following message:  
 
-![](too_much_data.png)
+![](pics/too_much_data.png)
 
 If in the filtered data are less than 1000 persons the network graph for the specific filter will be shown. Here you can see an example graph for all persons who worked in projects of the "Freie Universität Berlin":
 
-![](explore_area.png)
+![](pics/explore_area.png)
 
 Every node represent one person and the links between nodes will be drawn if persons worked together in a project. The width of the links encode the amount of projects they have worked together. The user can zoom into the graph and navigate via mouse. If he hovers over a node informations of this person will be displayed on the right side. This inforamtions includes the name of the person, the institution for which the person is working and a list of all projects the person worked in. The informations for a project includes the project name, the start and end year, if present the subject area and all institutions which where involve to this project.     
 
