@@ -37,7 +37,7 @@ of collaborations, the institutions associated, the academic field the collabora
 those relationships were forged. While this data is mostly freely available, it is a lot to take in and cannot
 reasonably be stored in a person's memory for evaluation.
 
-#### Data / tast abstraction
+#### Data / task abstraction
 Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
 as well as to compare them.\
 In this project we are using the java script library d3 (https://github.com/d3/d3) for creating a dynamic, interactive data visualization. We derived the data of our visualization from the gepris dfg data. One table contains all the data we need for the filtering process (filtered_data.csv). For the filtering we are using the crossfilter2 library (https://github.com/crossfilter/crossfilter) which enables fast filtering over different filter dimensions. The filter process returns a list of projects, which satisfy the selected filter options. We use the second table (filtered_persons_projects.csv) which contains the connection between the projects and the people and the list of projects to get the information who worked in the selected projects. Furthermore we calculate links between the persons. We create links between persons who work together in a project and if they work together in multiple projects we account this. \
