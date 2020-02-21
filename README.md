@@ -1,5 +1,3 @@
-- [ ] Project description: The description of the project should not be too extensive but help people understand the project and your design decisions in detail. Describe the idea behind the visualization project, the target group, and what its functionality is (e.g., interaction). Please complete this description with said design decisions as stated above. Do not forget to describe external data sources you used, and mention libraries you used in addition to d3.js.
-
 # Visualization tool for exploring network connections in the DFG data
 
 ![](pics/overview.png)
