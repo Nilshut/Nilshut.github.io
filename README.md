@@ -8,21 +8,14 @@
 - [x] Data copyright: Add the comment “Data derived from original data provided by https://gepris.dfg.de (c) Deutsche Forschungsgemeinschaft”
 
 
-1. [ Installation ](#install)
-2. [ Project description ](#project_description)
+1. [ Project description ](#project_description)
+2. [ Installation ](#install)
 3. [ Manual ](#manual)
 4. [ Contributors ](#contributors)
 
 # Visualization tool for exploring network connections in the DFG data
 
 We build a visualization tool with d3 for exploring connections from scientist in the DFG data (Deutsche Forschungsgemeinschaft) including multiple filtering options for the user.  
-
-
-<a name="install"></a>
-## Installation
-
-1. In folder "/d3" install dependencies with command: `npm i`
-2. Start server with `npx http-server .`
 
 <a name="project_description"></a>
 ## Project description
@@ -36,9 +29,6 @@ They all need to take their person of interest's network into account. Simply ty
 We do not know what constitutes a 'valuable' connection or a 'well-connected' scientist. Those are highly subjective
 questions that one can only answer for themselves. We provide the tool for you to analyse that which cannot
 be seen in a CV or heard in an interview or talk - we visualise networks.
-
-
-
 
 Our group of target users consists of anyone with an interest in the relationships between various DFG researchers.
 As mentioned above, this applies mostly to universities and professors looking to fill a vacancy or evaluate possible
@@ -68,6 +58,12 @@ Due to time constraints we were not able to include all our ideas. Among them, t
 Thinking aloud protocol:
 We showed our visualisation to another person with only the introduction that  this was a tool to visualise networks of DFG funded researchers. We learned a lot. For the uninitiated, the project start year and duration bar chart selection interface was very confusing. It was suggested to put the search bars on top. Our colour dimension was also not noticed for a long time and not intuitively understood. A further point of confusion was the fact that merely glossing over a node with the mouse leads to opening of the information sidebar on that person. Which node was expanded in the sidebar was not apparent and we should definitely introduce a highlighting feature for currently active node. Generally speaking, our visualisation's biggest drawback was a lack of guidance on how to use it.
 Based on our validation, the threats mentioned in Munzner's 2009 paper were avoided. Our interaction technique was well received, although we should have given a better introduction to how it works. But once understood, the great degree of freedom offered to the user invited playing around with our visualisation. Our test person stated that this was a more intuitive and fun to work with approach than a heatmap or simple listing of connected people. The test person was generally interested in our tool and believed others would be too, although more research would have to be done to truly validate this.
+
+<a name="install"></a>
+## Installation
+
+1. In folder "/d3" install dependencies with command: `npm i`
+2. Start server with `npx http-server .`
 
 <a name="manual"></a>
 ## Manual
