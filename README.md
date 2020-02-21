@@ -2,11 +2,12 @@
 
 # Visualization tool for exploring network connections in the DFG data
 
-We build a visualization tool with d3 for exploring connections from scientist in the DFG data (Deutsche 
-Forschungsgemeinschaft) including multiple filtering options for the user.  
-
 ![](pics/overview.png)
 
+---
+
+We build a visualization tool with d3 for exploring connections from scientist in the DFG data (Deutsche 
+Forschungsgemeinschaft) including multiple filtering options for the user.  
 
 ## Table of contents:
 
