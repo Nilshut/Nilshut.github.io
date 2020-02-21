@@ -42,6 +42,8 @@ reasonably be stored in a person's memory for evaluation.
 
 Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
 as well as to compare them.\
+
+used Libraries: crossfilter2, d3
 DATA PREPARATION.\
 
 Note that we do not aim to analyse our data but instead to aid analysis through visualisation.
