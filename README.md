@@ -25,6 +25,7 @@ We do not know what constitutes a 'valuable' connection or a 'well-connected' sc
 questions that one can only answer for themselves. We provide the tool for you to analyse that which cannot
 be seen in a CV or heard in an interview or talk - we visualise networks.
 
+# Domain problem characterization
 Our group of target users consists of anyone with an interest in the relationships between various DFG researchers.
 As mentioned above, this applies mostly to universities and professors looking to fill a vacancy or evaluate possible
 collaborations respectively. But pre- and post-graduates as well as the DFG itself can profit from utilising this visualisation
@@ -33,6 +34,7 @@ of collaborations, the institutions associated, the academic field the collabora
 those relationships were forged. While this data is mostly freely available, it is a lot to take in and cannot
 reasonably be stored in a person's memory for evaluation.
 
+# Data / tast abstraction
 Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
 as well as to compare them.\
 
@@ -43,6 +45,7 @@ DATA PREPARATION.\
 
 Note that we do not aim to analyse our data but instead to aid analysis through visualisation.
 
+# Visual encoding / interaction design:
 As we aim to visualise potentially very complex relations between people, a network presented itself as the best option.
 Due to the number of connections we wish to display, only a heatmap would have been a possible alternative. This option was disregarded because it seemed less intuitive and because most datsets displayed will be rather small, which works better with a network. Research into the comparison of networks yielded no results that we believed to constitute an easily understandable
 visualisation. As evaluating relationships is a very multi-faceted and deeply subjective task we aimed to give the user as much control as possible over the choice of which aspects of the people involved she wants to visualise. We identified the number of
@@ -50,11 +53,12 @@ collaborations shared with another person, that person's home institution and re
 in which the collaborations took place and their duration as fields of interest that can be selected by. Other data, such as e-mail address of the people involved, while available seemed irrelevant. Thus, they have been omitted which also greatly reduces cluttering of information.\
 The values of all the variables identified as relevant are broken into bins by which the user can select and combine at will. The data is thus interactively picked and observed. The binnings are intuitive and require no further explanation. As part of our maxim of handing control over to the user we decided to allow free roaming of the variable space. This allows the user to explore and compare what type of networks researchers that she has not previously taken into account have.
 
-We used a force-directed graph drawing algorithm to minimise edge-crossings and keep the graph as easily accessible by the human eye as possible. The thickness of the links between researchers reflects the intensity of their collaboration - the more projects shared, the thicker the line. Differing degrees of thickness are distinguishable by the human eye. Although differing lengths are known to be more easily distinguished, this would have influenced the shape of the graph and made it confusing. As to avoid cluttering of the screen, the networks are not shown until the data is sufficiently filtered.
+# Algorithm design
+We used a force-directed graph drawing algorithm to minimise edge-crossings and keep the graph as easily accessible by the human eye as possible. The thickness of the links between researchers reflects the intensity of their collaboration - the more projects shared, the thicker the line. Differing degrees of thickness are distinguishable by the human eye. Although differing lengths are known to be more easily distinguished, this would have influenced the shape of the graph and made it confusing. As to avoid cluttering of the screen, the networks are not shown until the data is sufficiently filtered (down to 1000 nodes). This also helps keep the computational costs low enough as to avoid performance issues.
 
 Due to time constraints we were not able to include all our ideas. Among them, the ones we would most like to have included are split screens to a)view two or more networks at a time for comparison (small multiples, owing to the Eye over Memory principle) and b) to show a person's home institution as well as academic field at the same time instead of having to toggle between those pieces of information. Small icons next to or inside the nodes, depicting the scientist's academic field would have also been a viable alternative to b). We would further have liked to introduce a binning for the width of the links between our nodes, as to make the differentiation between them more visible. It would also have been our wish to make the links display more information: clicking on a link could open a small window which lists the projects that the researchers on both ends of it have collaborated on. One necessity we missed out on due to time constraints was the display of a colour legend, explaining which node colour corresponds to which institution or academic field.
 
-Thinking aloud protocol:
+# Validation
 We showed our visualisation to another person with only the introduction that  this was a tool to visualise networks of DFG funded researchers. We learned a lot. For the uninitiated, the project start year and duration bar chart selection interface was very confusing. It was suggested to put the search bars on top. Our colour dimension was also not noticed for a long time and not intuitively understood. A further point of confusion was the fact that merely glossing over a node with the mouse leads to opening of the information sidebar on that person. Which node was expanded in the sidebar was not apparent and we should definitely introduce a highlighting feature for currently active node. Generally speaking, our visualisation's biggest drawback was a lack of guidance on how to use it.\
 Based on our validation, the threats mentioned in Munzner's 2009 paper were avoided. Our interaction technique was well received, although we should have given a better introduction to how it works. But once understood, the great degree of freedom offered to the user invited playing around with our visualisation. Our test person stated that this was a more intuitive and fun to work with approach than a heatmap or simple listing of connected people. The test person was generally interested in our tool and believed others would be too, although more research would have to be done to truly validate this.
 
