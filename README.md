@@ -68,6 +68,7 @@ Based on our validation, the threats mentioned in Munzner's 2009 paper were avoi
 
 1. In folder "/d3" install dependencies with command: `npm i`
 2. Start server with `npx http-server .`
+3. Open http://localhost:8080/ in browser (default port)
 
 <a name="manual"></a>
 ## Manual
