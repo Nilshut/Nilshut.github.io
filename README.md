@@ -39,6 +39,8 @@ as well as to compare them.\
 used Libraries: crossfilter2, d3
 DATA PREPARATION.\
 
+![](pics/data_er.png)
+
 Note that we do not aim to analyse our data but instead to aid analysis through visualisation.
 
 As we aim to visualise potentially very complex relations between people, a network presented itself as the best option.
