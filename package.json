@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "csv-writer": "^1.6.0",
-    "csvtojson": "^2.0.10",
     "http-server": "^0.12.1"
   },
   "dependencies": {
