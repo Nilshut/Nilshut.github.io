@@ -4,8 +4,8 @@
 
 ---
 
-We build a visualization tool with d3 for exploring connections from scientist in the DFG data (Deutsche 
-Forschungsgemeinschaft) including multiple filtering options for the user.  
+We build a visualization tool with d3 for exploring connections from scientist in the DFG (Deutsche 
+Forschungsgemeinschaft) data including multiple filtering options for the user.  
 
 ## Table of contents:
 
