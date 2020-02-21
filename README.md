@@ -29,6 +29,7 @@ questions that one can only answer for themselves. We provide the tool for you t
 be seen in a CV or heard in an interview or talk - we visualise networks.
 
 #### Domain problem characterization
+
 Our group of target users consists of anyone with an interest in the relationships between various DFG researchers.
 As mentioned above, this applies mostly to universities and professors looking to fill a vacancy or evaluate possible
 collaborations respectively. But pre- and post-graduates as well as the DFG itself can profit from utilising this visualisation
@@ -38,15 +39,14 @@ those relationships were forged. While this data is mostly freely available, it 
 reasonably be stored in a person's memory for evaluation.
 
 #### Data / task abstraction
-Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
-as well as to compare them.\
-In this project we are using the java script library d3 (https://github.com/d3/d3) for creating a dynamic, interactive data visualization. We derived the data of our visualization from the gepris dfg data. One table contains all the data we need for the filtering process (filtered_data.csv). For the filtering we are using the crossfilter2 library (https://github.com/crossfilter/crossfilter) which enables fast filtering over different filter dimensions. The filter process returns a list of projects, which satisfy the selected filter options. We use the second table (filtered_persons_projects.csv) which contains the connection between the projects and the people and the list of projects to get the information who worked in the selected projects. Furthermore we calculate links between the persons. We create links between persons who work together in a project and if they work together in multiple projects we account this. \
-Now we are ready for the network visualization: we draw a force directed graph with d3. The nodes represent the person and the links are the calculated connections between them. We enrich the node data with the third table (nodes.csv) including the person names and their institutions. \
-The user can interact with the visualization in many different ways. For example he can zoom into the network, select a node by hovering over it and see additional information to the person on the a sidebar. Also he can grab a node and change his position. To learn more about the different interaction possibilities see the [ Manual ](#manual).    
+
+We used the java script library d3 (https://github.com/d3/d3) to create a dynamic, interactive data visualization. Our starting point were the gepris dfg data from which we derived the data for our visualization. Following ypu can see the ER model of our data:
 
 ![](pics/data_er.png)
 
-Note that we do not aim to analyse our data but instead to aid analysis through visualisation.
+We have splitted the data in three tables. One table contains all the data we need for the filtering process (filtered_data.csv). For the filtering we are using the crossfilter2 library (https://github.com/crossfilter/crossfilter) which enables fast filtering over different filter dimensions. The filter process returns a list of projects, which satisfy the selected filter options. We use the second table (filtered_persons_projects.csv) which contains the connection between the projects and the people and the list of projects to get the information who worked in the selected projects. Furthermore we calculate links between the persons. We create links between persons who work together in a project and if they work together in multiple projects we account this. \
+Now we are ready for the network visualization: we draw a force directed graph with d3. The nodes represent the person and the links are the calculated connections between them. We enrich the node data with the third table (nodes.csv) including the person names and their institutions. \
+The user can interact with the visualization in many different ways. For example he can zoom into the network, select a node by hovering over it and see additional information to the person on the a sidebar. Also he can grab a node and change his position. To learn more about the different interaction possibilities see the [ Manual ](#manual). Note that we do not aim to analyse our data but instead to aid analysis through visualisation.    
 
 #### Visual encoding / interaction design:
 As we aim to visualise potentially very complex relations between people, a network presented itself as the best option.
