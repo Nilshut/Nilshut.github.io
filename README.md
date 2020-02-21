@@ -94,8 +94,6 @@ If in the filtered data are less than 1000 persons the network graph for the spe
 
 Every node represent one person and the links between nodes will be drawn if persons worked together in a project. The width of the links encode the amount of projects they have worked together. The user can zoom into the graph and navigate via mouse. If he hovers over a node informations of this person will be displayed on the right side. This inforamtions includes the name of the person, the institution for which the person is working and a list of all projects the person worked in. The informations for a project includes the project name, the start and end year, if present the subject area and all institutions which where involve to this project.     
 
-![](gepris_data_er.png)
-
 <a name="contributors"></a>
 ## Contributors
 
