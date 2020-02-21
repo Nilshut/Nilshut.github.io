@@ -1,21 +1,30 @@
 - [x] Project name. The name of the visualization should be the first thing people see.
-- [ ] Short description: Goal of the visualization in one sentence.
-- [ ] Table of contents (TOC): If the README is longer than a page, use a TOC to navigate between the subsections of the page.
+- [x] Short description: Goal of the visualization in one sentence.
+- [x] Table of contents (TOC): If the README is longer than a page, use a TOC to navigate between the subsections of the page.
 - [ ] Project description: The description of the project should not be too extensive but help people understand the project and your design decisions in detail. Describe the idea behind the visualization project, the target group, and what its functionality is (e.g., interaction). Please complete this description with said design decisions as stated above. Do not forget to describe external data sources you used, and mention libraries you used in addition to d3.js.
 - [ ] Installation: How can I install the visualization project (step-by-step manual)?
 - [ ] Manual: A brief manual about how to use the software. For this it makes sense to use screencasts or screenshots.
 - [x] Contributors: Name your group members here and add links to their (Github) profiles.
 - [x] Data copyright: Add the comment “Data derived from original data provided by https://gepris.dfg.de (c) Deutsche Forschungsgemeinschaft”
 
+
+1. [ Installation ](#install)
+2. [ Project description ](#project_description)
+3. [ Manual ](#manual)
+4. [ Contributors ](#contributors)
+
 # Visualization tool for exploring network connections in the DFG data
 
 We build a visualization tool with d3 for exploring connections from scientist in the DFG data (Deutsche Forschungsgemeinschaft) including multiple filtering options for the user.  
 
+
+<a name="install"></a>
 ## Installation
 
 1. In folder "/d3" install dependencies with command: `npm i`
 2. Start server with `npx http-server .`
 
+<a name="project_description"></a>
 ## Project description
 
 "Your network is your net worth." -- Porter Gale. We all know the importance of networking in science but often neglect it.
@@ -41,14 +50,14 @@ reasonably be stored in a person's memory for evaluation.
 
 Abstracting our previous characterisation, we come to realise that our task is two-fold: To visualise existing relations
 as well as to compare them.
-DATA PREPARATION. 
+DATA PREPARATION.
 Note that we do not aim to analyse our data but instead to aid analysis through visualisation.
 
-As we aim to visualise potentially very complex relations between people, a network presented itself as the best option. 
+As we aim to visualise potentially very complex relations between people, a network presented itself as the best option.
 Due to the number of connections we wish to display, only a heatmap would have been a possible alternative. This option was disregarded because it seemed less intuitive and because most datsets displayed will be rather small, which works better with a network. Research into the comparison of networks yielded no results that we believed to constitute an easily understandable
 visualisation. As evaluating relationships is a very multi-faceted and deeply subjective task we aimed to give the user as much control as possible over the choice of which aspects of the people involved she wants to visualise. We identified the number of
 collaborations shared with another person, that person's home institution and research field as well as the years
-in which the collaborations took place and their duration as fields of interest that can be selected by. Other data, such as e-mail address of the people involved, while available seemed irrelevant. Thus, they have been omitted which also greatly reduces cluttering of information. 
+in which the collaborations took place and their duration as fields of interest that can be selected by. Other data, such as e-mail address of the people involved, while available seemed irrelevant. Thus, they have been omitted which also greatly reduces cluttering of information.
 The values of all the variables identified as relevant are broken into bins by which the user can select and combine at will. The data is thus interactively picked and observed. The binnings are intuitive and require no further explanation. As part of our maxim of handing control over to the user we decided to allow free roaming of the variable space. This allows the user to explore and compare what type of networks researchers that she has not previously taken into account have.
 
 We used a force-directed graph drawing algorithm to minimise edge-crossings and keep the graph as easily accessible by the human eye as possible. The thickness of the links between researchers reflects the intensity of their collaboration - the more projects shared, the thicker the line. Differing degrees of thickness are distinguishable by the human eye. Although differing lengths are known to be more easily distinguished, this would have influenced the shape of the graph and made it confusing. As to avoid cluttering of the screen, the networks are not shown until the data is sufficiently filtered.
@@ -60,6 +69,7 @@ Thinking aloud protocol:
 We showed our visualisation to another person with only the introduction that  this was a tool to visualise networks of DFG funded researchers. We learned a lot. For the uninitiated, the project start year and duration bar chart selection interface was very confusing. It was suggested to put the search bars on top. Our colour dimension was also not noticed for a long time and not intuitively understood. A further point of confusion was the fact that merely glossing over a node with the mouse leads to opening of the information sidebar on that person. Which node was expanded in the sidebar was not apparent and we should definitely introduce a highlighting feature for currently active node. Generally speaking, our visualisation's biggest drawback was a lack of guidance on how to use it.
 Based on our validation, the threats mentioned in Munzner's 2009 paper were avoided. Our interaction technique was well received, although we should have given a better introduction to how it works. But once understood, the great degree of freedom offered to the user invited playing around with our visualisation. Our test person stated that this was a more intuitive and fun to work with approach than a heatmap or simple listing of connected people. The test person was generally interested in our tool and believed others would be too, although more research would have to be done to truly validate this.
 
+<a name="manual"></a>
 ## Manual
 
 The visualization tool is structured in two main areas: the filtering and the exploring area.   
@@ -92,6 +102,7 @@ Data derived from original data provided by https://gepris.dfg.de (c) Deutsche F
 
 ![](gepris_data_er.png)
 
+<a name="contributors"></a>
 ## Contributors
 
 - Nils Hutmacher (https://github.com/Nilshut)
